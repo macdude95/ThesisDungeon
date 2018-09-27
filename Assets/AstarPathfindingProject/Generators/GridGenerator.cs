@@ -627,15 +627,15 @@ namespace Pathfinding {
 			// Calculate the closest node and the closest point on that node
 			position = transform.InverseTransform(position);
 
-			float xf = position.x-0.5F;
-			float zf = position.z-0.5f;
-			int x = Mathf.Clamp(Mathf.RoundToInt(xf), 0, width-1);
-			int z = Mathf.Clamp(Mathf.RoundToInt(zf), 0, depth-1);
+			float xf = position.x;
+			float zf = position.z;
+			int x = Mathf.Clamp((int)xf, 0, width-1);
+			int z = Mathf.Clamp((int)zf, 0, depth-1);
 
 			var nn = new NNInfoInternal(nodes[z*width+x]);
 
 			float y = transform.InverseTransform((Vector3)nodes[z*width+x].position).y;
-			nn.clampedPosition = transform.Transform(new Vector3(Mathf.Clamp(xf, x-0.5f, x+0.5f)+0.5f, y, Mathf.Clamp(zf, z-0.5f, z+0.5f)+0.5f));
+			nn.clampedPosition = transform.Transform(new Vector3(Mathf.Clamp(xf, x, x+1f), y, Mathf.Clamp(zf, z, z+1f)));
 
 			return nn;
 		}
@@ -652,10 +652,10 @@ namespace Pathfinding {
 			position = transform.InverseTransform(position);
 
 			// Find the coordinates of the closest node
-			float xf = position.x-0.5F;
-			float zf = position.z-0.5f;
-			int x = Mathf.Clamp(Mathf.RoundToInt(xf), 0, width-1);
-			int z = Mathf.Clamp(Mathf.RoundToInt(zf), 0, depth-1);
+			float xf = position.x;
+			float zf = position.z;
+			int x = Mathf.Clamp((int)xf, 0, width-1);
+			int z = Mathf.Clamp((int)zf, 0, depth-1);
 
 			// Closest node
 			GridNode node = nodes[x+z*width];
@@ -672,7 +672,7 @@ namespace Pathfinding {
 				minNode = node;
 				minDist = ((Vector3)minNode.position-globalPosition).sqrMagnitude;
 				float y = transform.InverseTransform((Vector3)node.position).y;
-				clampedPosition = transform.Transform(new Vector3(Mathf.Clamp(xf, x-0.5f, x+0.5f)+0.5f, y, Mathf.Clamp(zf, z-0.5f, z+0.5f)+0.5f));
+				clampedPosition = transform.Transform(new Vector3(Mathf.Clamp(xf, x, x+1f), y, Mathf.Clamp(zf, z, z+1f)));
 			}
 
 			if (minNode != null) {
@@ -692,9 +692,7 @@ namespace Pathfinding {
 			for (int w = 1;; w++) {
 				//Check if the nodes are within distance limit
 				if (nodeSize*w > maxDist) {
-					nn.node = minNode;
-					nn.clampedPosition = clampedPosition;
-					return nn;
+					break;
 				}
 
 				bool anyInside = false;
@@ -715,7 +713,7 @@ namespace Pathfinding {
 							minNode = nodes[nx+nz2];
 
 							// Closest point on the node if the node is treated as a square
-							clampedPosition = transform.Transform(new Vector3(Mathf.Clamp(xf, nx-0.5f, nx+0.5f)+0.5f, transform.InverseTransform((Vector3)minNode.position).y, Mathf.Clamp(zf, nz-0.5f, nz+0.5f)+0.5f));
+							clampedPosition = transform.Transform(new Vector3(Mathf.Clamp(xf, nx, nx+1f), transform.InverseTransform((Vector3)minNode.position).y, Mathf.Clamp(zf, nz, nz+1f)));
 						}
 					}
 				}
@@ -732,7 +730,7 @@ namespace Pathfinding {
 						if (dist < minDist && dist < maxDistSqr) {
 							minDist = dist;
 							minNode = nodes[nx+nz2];
-							clampedPosition = transform.Transform(new Vector3(Mathf.Clamp(xf, nx-0.5f, nx+0.5f)+0.5f, transform.InverseTransform((Vector3)minNode.position).y, Mathf.Clamp(zf, nz-0.5f, nz+0.5f)+0.5f));
+							clampedPosition = transform.Transform(new Vector3(Mathf.Clamp(xf, nx, nx+1f), transform.InverseTransform((Vector3)minNode.position).y, Mathf.Clamp(zf, nz, nz+1f)));
 						}
 					}
 				}
@@ -748,7 +746,7 @@ namespace Pathfinding {
 						if (dist < minDist && dist < maxDistSqr) {
 							minDist = dist;
 							minNode = nodes[nx+nz*width];
-							clampedPosition = transform.Transform(new Vector3(Mathf.Clamp(xf, nx-0.5f, nx+0.5f)+0.5f, transform.InverseTransform((Vector3)minNode.position).y, Mathf.Clamp(zf, nz-0.5f, nz+0.5f)+0.5f));
+							clampedPosition = transform.Transform(new Vector3(Mathf.Clamp(xf, nx, nx+1f), transform.InverseTransform((Vector3)minNode.position).y, Mathf.Clamp(zf, nz, nz+1f)));
 						}
 					}
 				}
@@ -764,7 +762,7 @@ namespace Pathfinding {
 						if (dist < minDist && dist < maxDistSqr) {
 							minDist = dist;
 							minNode = nodes[nx+nz*width];
-							clampedPosition = transform.Transform(new Vector3(Mathf.Clamp(xf, nx-0.5f, nx+0.5f)+0.5f, transform.InverseTransform((Vector3)minNode.position).y, Mathf.Clamp(zf, nz-0.5f, nz+0.5f)+0.5f));
+							clampedPosition = transform.Transform(new Vector3(Mathf.Clamp(xf, nx, nx+1f), transform.InverseTransform((Vector3)minNode.position).y, Mathf.Clamp(zf, nz, nz+1f)));
 						}
 					}
 				}
@@ -774,9 +772,7 @@ namespace Pathfinding {
 					// If we don't need to search more, just return
 					// Otherwise search for 'overlap' iterations more
 					if (overlap == 0) {
-						nn.node = minNode;
-						nn.clampedPosition = clampedPosition;
-						return nn;
+						break;
 					}
 					overlap--;
 				}
@@ -785,11 +781,14 @@ namespace Pathfinding {
 				// We will not be able to find any more valid nodes
 				// so just return
 				if (!anyInside) {
-					nn.node = minNode;
-					nn.clampedPosition = clampedPosition;
-					return nn;
+					break;
 				}
 			}
+
+			// Copy fields to the NNInfo struct and return
+			nn.node = minNode;
+			nn.clampedPosition = clampedPosition;
+			return nn;
 		}
 
 		/** Sets up #neighbourOffsets with the current settings. #neighbourOffsets, #neighbourCosts, #neighbourXOffsets and #neighbourZOffsets are set up.\n

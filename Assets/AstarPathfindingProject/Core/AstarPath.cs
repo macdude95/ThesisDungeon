@@ -26,7 +26,7 @@ using Thread = System.Threading.Thread;
 [HelpURL("http://arongranberg.com/astar/docs/class_astar_path.php")]
 public class AstarPath : VersionedMonoBehaviour {
 	/** The version number for the A* %Pathfinding Project */
-	public static readonly System.Version Version = new System.Version(4, 1, 12);
+	public static readonly System.Version Version = new System.Version(4, 1, 16);
 
 	/** Information about where the package was downloaded */
 	public enum AstarDistribution { WebsiteDownload, AssetStore };
@@ -560,10 +560,11 @@ public class AstarPath : VersionedMonoBehaviour {
 	private ushort nextFreePathID = 1;
 
 	private AstarPath () {
-		// Make sure that the pathProcessor is never null
-		pathProcessor = new PathProcessor(this, pathReturnQueue, 0, true);
-
 		pathReturnQueue = new PathReturnQueue(this);
+
+		// Make sure that the pathProcessor is never null
+		pathProcessor = new PathProcessor(this, pathReturnQueue, 1, false);
+
 		workItems = new WorkItemProcessor(this);
 		graphUpdates = new GraphUpdateProcessor(this);
 
@@ -745,7 +746,7 @@ public class AstarPath : VersionedMonoBehaviour {
 			} else if (path.error) {
 				Debug.LogWarning(debug);
 			} else {
-				//Debug.Log(debug);
+				Debug.Log(debug);
 			}
 		}
 	}
@@ -1124,6 +1125,9 @@ public class AstarPath : VersionedMonoBehaviour {
 	/** Initializes the #pathProcessor field */
 	void InitializePathProcessor () {
 		int numThreads = CalculateThreadCount(threadCount);
+
+		// Outside of play mode everything is synchronous, so no threads are used.
+		if (!Application.isPlaying) numThreads = 0;
 
 		// Trying to prevent simple modding to add support for more than one thread
 		if (numThreads > 1) {
@@ -1579,7 +1583,7 @@ public class AstarPath : VersionedMonoBehaviour {
 		System.GC.Collect();
 
 		if (logPathResults != PathLog.None && logPathResults != PathLog.OnlyErrors) {
-			//Debug.Log("Scanning - Process took "+(lastScanTime*1000).ToString("0")+" ms to complete");
+			Debug.Log("Scanning - Process took "+(lastScanTime*1000).ToString("0")+" ms to complete");
 		}
 	}
 
@@ -1674,7 +1678,7 @@ public class AstarPath : VersionedMonoBehaviour {
 						throw new System.Exception("Pathfinding Threads seem to have crashed.");
 					}
 
-					//Wait for threads to calculate paths
+					// Wait for threads to calculate paths
 					Thread.Sleep(1);
 					active.PerformBlockingActions(true);
 				}
@@ -1685,7 +1689,7 @@ public class AstarPath : VersionedMonoBehaviour {
 						throw new System.Exception("Critical error. Path Queue is empty but the path state is '" + path.PipelineState + "'");
 					}
 
-					//Calculate some paths
+					// Calculate some paths
 					active.pathProcessor.TickNonMultithreaded();
 					active.PerformBlockingActions(true);
 				}
@@ -1774,6 +1778,11 @@ public class AstarPath : VersionedMonoBehaviour {
 			astar.pathProcessor.queue.PushFront(path);
 		} else {
 			astar.pathProcessor.queue.Push(path);
+		}
+
+		// Outside of play mode, all path requests are synchronous
+		if (!Application.isPlaying) {
+			BlockUntilCalculated(path);
 		}
 	}
 

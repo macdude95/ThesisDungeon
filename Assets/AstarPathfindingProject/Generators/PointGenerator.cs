@@ -291,13 +291,20 @@ namespace Pathfinding {
 			}
 
 
-			foreach (var progress in ConnectNodes()) yield return progress.MapTo(0.16f, 1.0f);
+			foreach (var progress in ConnectNodesAsync()) yield return progress.MapTo(0.16f, 1.0f);
+		}
+
+		/** Recalculates connections for all nodes in the graph.
+		 * This is useful if you have created nodes manually using #AddNode and then want to connect them in the same way as the point graph normally connects nodes.
+		 */
+		public void ConnectNodes () {
+			foreach (var progress in ConnectNodesAsync()) {}
 		}
 
 		/** Calculates connections for all nodes in the graph.
 		 * This is an IEnumerable, you can iterate through it using e.g foreach to get progress information.
 		 */
-		IEnumerable<Progress> ConnectNodes () {
+		IEnumerable<Progress> ConnectNodesAsync () {
 			if (maxDistance >= 0) {
 				// To avoid too many allocations, these lists are reused for each node
 				var connections = new List<Connection>();

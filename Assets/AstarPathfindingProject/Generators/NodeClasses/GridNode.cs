@@ -162,10 +162,6 @@ namespace Pathfinding {
 			// Convert to graph space
 			p = gg.transform.InverseTransform(p);
 
-			// Nodes are offset 0.5 graph space nodes
-			float xf = position.x-0.5F;
-			float zf = position.z-0.5f;
-
 			// Calculate graph position of this node
 			int x = NodeInGridIndex % gg.width;
 			int z = NodeInGridIndex / gg.width;
@@ -173,7 +169,7 @@ namespace Pathfinding {
 			// Handle the y coordinate separately
 			float y = gg.transform.InverseTransform((Vector3)position).y;
 
-			var closestInGraphSpace = new Vector3(Mathf.Clamp(xf, x-0.5f, x+0.5f)+0.5f, y, Mathf.Clamp(zf, z-0.5f, z+0.5f)+0.5f);
+			var closestInGraphSpace = new Vector3(Mathf.Clamp(p.x, x, x+1f), y, Mathf.Clamp(p.z, z, z+1f));
 
 			// Convert to world space
 			return gg.transform.Transform(closestInGraphSpace);

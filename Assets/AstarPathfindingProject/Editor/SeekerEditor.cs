@@ -9,7 +9,7 @@ namespace Pathfinding {
 		static bool tagPenaltiesOpen;
 		static List<Seeker> scripts = new List<Seeker>();
 
-		GUIContent[] exactnessLabels = new [] { new GUIContent("Snap To Node"), new GUIContent("Original"), new GUIContent("Interpolate (deprecated)"), new GUIContent("Closest On Node"), new GUIContent("Node Connection") };
+		GUIContent[] exactnessLabels = new [] { new GUIContent("Node Center (Snap To Node)"), new GUIContent("Original"), new GUIContent("Interpolate (deprecated)"), new GUIContent("Closest On Node Surface"), new GUIContent("Node Connection") };
 		string[] graphLabels = new string[32];
 
 		protected override void Inspector () {
