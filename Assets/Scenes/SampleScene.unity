@@ -196,9 +196,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wallPrefab: {fileID: 1898474690905426, guid: ae9f74b1a48c042af9eee97e260a7e38, type: 2}
-  maxXDimension: 20
-  maxYDimension: 12
-  density: 0.3
+  maxXDimension: 21
+  maxYDimension: 13
+  density: 0.19
 --- !u!1001 &81920941
 Prefab:
   m_ObjectHideFlags: 0
@@ -1242,6 +1242,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wallsController: {fileID: 72836166}
+  player: {fileID: 425504182}
 --- !u!4 &1664858587
 Transform:
   m_ObjectHideFlags: 0
