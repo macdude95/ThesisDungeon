@@ -11,8 +11,9 @@ public class GameController : MonoBehaviour {
     private void Awake()
     {
         RoomConnection[] connections = { RoomConnection.North, RoomConnection.South };
-        wallsController.SetupRoom(connections, 0.15f, 20, 20);
-        Vector3Int entrancePosition = wallsController.PositionOfRoomConnection(RoomConnection.North);
+        Room r = new Room(20, 13, 0.35f, connections);
+        wallsController.SetupRoom(r);
+        Vector3Int entrancePosition = r.PositionOfRoomConnection(RoomConnection.North);
         player.transform.position = entrancePosition;
     }
 }
