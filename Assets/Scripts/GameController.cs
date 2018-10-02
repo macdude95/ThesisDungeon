@@ -5,14 +5,14 @@ using UnityEngine.Tilemaps;
 
 public class GameController : MonoBehaviour {
 
-    public WallsController wallsController;
+    public RoomSetUp wallsController;
     public GameObject player;
 
     private void Awake()
     {
-        RoomConnectionType[] connections = { RoomConnectionType.North, RoomConnectionType.South };
+        RoomConnection[] connections = { RoomConnection.North, RoomConnection.South };
         wallsController.SetupRoom(connections, 0.15f, 20, 20);
-        Vector3Int entrancePosition = wallsController.PositionOfRoomConnection(RoomConnectionType.North);
+        Vector3Int entrancePosition = wallsController.PositionOfRoomConnection(RoomConnection.North);
         player.transform.position = entrancePosition;
     }
 }
