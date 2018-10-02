@@ -10,8 +10,9 @@ public class GameController : MonoBehaviour {
 
     private void Awake()
     {
-        wallsController.SetupRoom(RoomConnectionType.North);
-        Vector3Int entrancePosition = wallsController.PositionOfEntrance();
+        RoomConnectionType[] connections = { RoomConnectionType.North, RoomConnectionType.South };
+        wallsController.SetupRoom(connections, 0.15f, 20, 20);
+        Vector3Int entrancePosition = wallsController.PositionOfRoomConnection(RoomConnectionType.North);
         player.transform.position = entrancePosition;
     }
 }

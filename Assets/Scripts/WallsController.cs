@@ -14,124 +14,145 @@ public enum RoomConnectionType { North, South, East, West }//, Up, Down, NextLev
 
 public class WallsController : MonoBehaviour
 {
+    public const int maximumWidth = 20;
+    public const int maximumHeight = 13;
 
     public GameObject wallPrefab;
-    public int maxXDimension = 11;
-    public int maxYDimension = 11;
-    [Range(0,1)]
-    public float density = 0.3f;
     private List<GameObject> wallObjects;
-    private int numberOfInteriorWalls;
-    private RoomConnectionType entrance;
     private int currentWall = 0;
+    private int numberOfInteriorWalls;
+    private int numberOfExteriorWalls;
     private TileType[,] walls;
     private enum TileType { Ground, Wall };
 
-    // Random Variables
-    private List<RoomConnectionType> roomConnections;
+    // Variables
+    private RoomConnectionType[] roomConnections;
+    private float density;
+    private int width;
+    private int height;
 
 
     void Awake()
     {
         wallObjects = new List<GameObject>();
-        roomConnections = new List<RoomConnectionType>();
         CreateWallObjects();
     }
 
-    public void SetupRoom(RoomConnectionType entrance)
+    public void SetupRoom(RoomConnectionType[] roomConnections, float density = 0.3f, int width = 11, int height = 11)
     {
+        // Set instance variables
+        this.width = Mathf.Min(width, maximumWidth);
+        this.height = Mathf.Min(height, maximumHeight); ;
+        this.density = density;
+        this.roomConnections = roomConnections;
+
+        // Set game objects to active accordingly
+        SetWallObejctsToActive();
+
+        // Create rooms until a valid one is complete
         bool allPathsArePossible = true;
         int count = 1;
         do
         {
             Debug.Log("attempt number " + count++);
-            this.entrance = entrance;
-            walls = new TileType[maxXDimension, maxYDimension];
+            walls = new TileType[width, height];
             foreach (GameObject go in wallObjects)
             {
                 go.SetActive(false);
             }
-            RandomlySetVariables();
             PlaceExteriorWalls();
             PlaceInteriorWalls();
-            PositionGameObjects();
+            PositionTiles();
             AstarPath.active.Scan();
 
             allPathsArePossible = true;
             // Check to make sure all paths are possible
-            GraphNode entranceNode = AstarPath.active.GetNearest(PositionOfEntrance(), NNConstraint.Default).node;
             foreach (RoomConnectionType connection in roomConnections)
             {
-                if (connection == entrance) { continue; }
-                GraphNode exitNode = AstarPath.active.GetNearest(PositionOfRoomConnection(connection), NNConstraint.Default).node;
+                GraphNode node1 = AstarPath.active.GetNearest(PositionOfRoomConnection(connection), NNConstraint.Default).node;
+                foreach (RoomConnectionType otherConnection in roomConnections) 
+                {
+                    if (connection == otherConnection) { continue; }
+                    GraphNode node2 = AstarPath.active.GetNearest(PositionOfRoomConnection(otherConnection), NNConstraint.Default).node;
 
-                bool pathIsPossible = PathUtilities.IsPathPossible(entranceNode, exitNode);
-                Debug.Log("Is there a path between " + entrance + " and " + connection + "?: " + pathIsPossible);
-                if (!pathIsPossible) { allPathsArePossible = false; }
+                    bool pathIsPossible = PathUtilities.IsPathPossible(node1, node2);
+                    Debug.Log("Is there a path between " + connection + " and " + otherConnection + "?: " + pathIsPossible);
+                    if (!pathIsPossible) { allPathsArePossible = false; }
+                }
             }
         } while (!allPathsArePossible);
     }
 
-    public Vector3Int PositionOfEntrance()
+    private void SetWallObejctsToActive() 
     {
-        return PositionOfRoomConnection(entrance);
+        numberOfExteriorWalls = width * 2 + height * 2 - 4; // subtract 4 because corners are counted twice
+        numberOfInteriorWalls = (int)((width - 2) * (height - 2) * density);
+        int totalNumberToSetActive = numberOfExteriorWalls + numberOfInteriorWalls;
+        foreach (GameObject wall in wallObjects)
+        {
+            if (totalNumberToSetActive > 0)
+            {
+                wall.SetActive(true);
+            }
+            wall.SetActive(false);
+        }
     }
 
-    private Vector3Int PositionOfRoomConnection(RoomConnectionType roomConnection)
+    public Vector3 PositionOfCenter()
+    {
+        Vector3Int eastPosition = PositionOfRoomConnection(RoomConnectionType.East);
+        Vector3Int westPosition = PositionOfRoomConnection(RoomConnectionType.West);
+
+        return Vector3.Lerp(eastPosition, westPosition, 0.5f);
+    }
+
+    public Vector3Int PositionOfRoomConnection(RoomConnectionType roomConnection)
     {
         int x = 0, y = 0;
         switch (roomConnection)
         {
             case RoomConnectionType.North:
-                x = maxXDimension / 2;
-                y = maxYDimension - 1;
+                x = width / 2;
+                y = height - 1;
                 break;
             case RoomConnectionType.South:
-                x = maxXDimension / 2;
+                x = width / 2;
                 y = 0;
                 break;
             case RoomConnectionType.East:
-                x = maxXDimension - 1;
-                y = maxYDimension / 2;
+                x = width - 1;
+                y = height / 2;
                 break;
             case RoomConnectionType.West:
                 x = 0;
-                y = maxYDimension / 2;
+                y = height / 2;
                 break;
 
         }
         return new Vector3Int(x, y, 0);
     }
 
-    private void RandomlySetVariables() 
-    {
-        ChooseRoomConnections();
-    }
-
-    private void ChooseRoomConnections() 
-    {
-        // Connections to other rooms
-        roomConnections.Clear();
-        roomConnections.Add(entrance);
-        System.Array allPossibleRoomConnections = System.Enum.GetValues(typeof(RoomConnectionType));
-        int numberOfOtherConnections = Random.Range(1, allPossibleRoomConnections.Length);
-        while (numberOfOtherConnections > 0) 
-        {
-            RoomConnectionType roomConnection = (RoomConnectionType)Random.Range(0, allPossibleRoomConnections.Length);
-            if (!roomConnections.Contains(roomConnection))
-            {
-                roomConnections.Add(roomConnection);
-                numberOfOtherConnections--;
-            }
-        }
-    }
+    //private void ChooseRoomConnections() 
+    //{
+    //    // Connections to other rooms
+    //    roomConnections = {};
+    //    roomConnections.Add(entrance);
+    //    System.Array allPossibleRoomConnections = System.Enum.GetValues(typeof(RoomConnectionType));
+    //    int numberOfOtherConnections = Random.Range(1, allPossibleRoomConnections.Length);
+    //    while (numberOfOtherConnections > 0) 
+    //    {
+    //        RoomConnectionType roomConnection = (RoomConnectionType)Random.Range(0, allPossibleRoomConnections.Length);
+    //        if (!roomConnections.Contains(roomConnection))
+    //        {
+    //            roomConnections.Add(roomConnection);
+    //            numberOfOtherConnections--;
+    //        }
+    //    }
+    //}
 
     private void CreateWallObjects() 
     {
-        int numberOfExteriorWalls = maxXDimension * 2 + maxYDimension * 2 - 4; // subtract 4 because corners are counted twice
-        numberOfInteriorWalls = (int)((maxXDimension - 2) * (maxYDimension - 2) * density);
-        Debug.Log("Number of interior walls: " + numberOfInteriorWalls);
-        for (int i = 0; i < numberOfExteriorWalls + numberOfInteriorWalls; i++)
+        for (int i = 0; i < maximumWidth * maximumHeight; i++)
         {
             GameObject w = Instantiate(wallPrefab, gameObject.transform);
             w.SetActive(false);
@@ -141,11 +162,11 @@ public class WallsController : MonoBehaviour
 
     private void PlaceExteriorWalls()
     {
-        for (int x = 0; x < maxXDimension; x++)
+        for (int x = 0; x < width; x++)
         {
-            for (int y = 0; y < maxYDimension; y++)
+            for (int y = 0; y < height; y++)
             {
-                bool isOnEdge = x == maxXDimension - 1 || x == 0 || y == maxYDimension - 1 || y == 0;
+                bool isOnEdge = x == width - 1 || x == 0 || y == height - 1 || y == 0;
                 if (isOnEdge)
                 {
                     walls[x, y] = TileType.Wall;
@@ -165,8 +186,8 @@ public class WallsController : MonoBehaviour
         int occupiedSpots = 0;
         while (occupiedSpots < numberOfInteriorWalls)
         {
-            int x = Random.Range(1, maxXDimension - 1);
-            int y = Random.Range(1, maxYDimension - 1);
+            int x = Random.Range(1, width - 1);
+            int y = Random.Range(1, height - 1);
             if (walls[x,y] != TileType.Wall)
             {
                 walls[x, y] = TileType.Wall;
@@ -175,12 +196,12 @@ public class WallsController : MonoBehaviour
         }
     }
 
-    private void PositionGameObjects() 
+    private void PositionTiles() 
     {
         currentWall = 0;
-        for (int x = 0; x < maxXDimension; x++)
+        for (int x = 0; x < width; x++)
         {
-            for (int y = 0; y < maxYDimension; y++)
+            for (int y = 0; y < height; y++)
             {
                 PositionTile(walls[x, y], new Vector2Int(x, y));
             }
