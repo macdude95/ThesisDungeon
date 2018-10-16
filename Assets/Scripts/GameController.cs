@@ -33,42 +33,19 @@ public class GameController : MonoBehaviour
 
     public void enterRoomConnection(RoomConnection roomConnection)
     {
-        print("entering: " + roomConnection);
         currentRoomController.gameObject.SetActive(false);
         currentRoomLocation = Level.getNextRoomLocation(currentRoomController.room, roomConnection);
-        RoomController nextRoom = roomControllers[currentRoomLocation.x, currentRoomLocation.y, currentRoomLocation.z];
+        RoomController nextRoom = currentRoomController;
         RoomConnection entranceConnection = Room.oppositeOfRoomConnection(roomConnection);
-        Vector3Int positionOfEntranceToNextRoom = nextRoom.room.PositionOfRoomConnection(entranceConnection);
-        Vector3Int offset = Vector3Int.zero;
-        switch (roomConnection) {
-            case RoomConnection.North:
-                offset = Vector3Int.down;
-                break;
-            case RoomConnection.South:
-                offset = Vector3Int.up;
-                break;
-            case RoomConnection.East:
-                offset = Vector3Int.left;
-                break;
-            case RoomConnection.West:
-                offset = Vector3Int.right;
-                break;
-            case RoomConnection.Down:
-            case RoomConnection.Up:
-                // depends on if it is facing right or left
-                // the stairs are facing right if the player is moving left and vice versa
-                bool facingRight = player.GetComponent<Rigidbody2D>().velocity.x < 0;
-                offset = facingRight ? Vector3Int.right : Vector3Int.left;
-                break;
-
-        }
-        PutPlayerInRoomAtPosition(nextRoom, positionOfEntranceToNextRoom - offset);
+        Vector3Int playerStartingPositionInNextRoom = nextRoom.room.EntrancePositionOfRoomConnection(entranceConnection);
+        PutPlayerInRoomAtPosition(nextRoom, playerStartingPositionInNextRoom);
     }
 
     private void PutPlayerInRoomAtPosition(RoomController roomController, Vector3Int position) 
     {
         roomController.gameObject.SetActive(true);
         player.transform.position = position;
+        player.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
         AstarPath.active.Scan();
     }
 

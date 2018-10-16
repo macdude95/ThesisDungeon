@@ -77,4 +77,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf3fbb6ed78dc48f8b2f44fe7810ed7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roomConnection: 0
+  upstairsSprite: {fileID: 21300010, guid: 3198fb5d7bfb742ee98c50b1f6a9f045, type: 3}
+  downstairsSprite: {fileID: 21300008, guid: 3198fb5d7bfb742ee98c50b1f6a9f045, type: 3}

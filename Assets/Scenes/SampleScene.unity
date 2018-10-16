@@ -371,7 +371,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 519420032}
-  - {fileID: 1013196104}
+  - {fileID: 1405838808}
   - {fileID: 425504187}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -389,15 +389,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roomPrefab: {fileID: 1309703722579688, guid: c75eeb78e9d4040379d408dbd4d85c22, type: 2}
   player: {fileID: 425504182}
---- !u!1 &1013196103
+--- !u!1 &1405838807
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1013196104}
-  - component: {fileID: 1013196105}
+  - component: {fileID: 1405838808}
+  - component: {fileID: 1405838809}
   m_Layer: 0
   m_Name: A*
   m_TagString: Untagged
@@ -405,25 +405,25 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1013196104
+--- !u!4 &1405838808
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1013196103}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_GameObject: {fileID: 1405838807}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 602329255}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1013196105
+--- !u!114 &1405838809
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1013196103}
+  m_GameObject: {fileID: 1405838807}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 78396926cbbfc4ac3b48fc5fc34a87d1, type: 3}
@@ -431,7 +431,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   version: 1
   data:
-    dataString: UEsDBBQAAAgIAACAn+uKKDbxNQAAAD4AAAAJACQAbWV0YS5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0Bq1YqSy0qzszPU7JSMNEz1DM001FQSi9KLMgoBooYgDilmSkgdnQskFNSWZDql5ibChGoBQBQSwECLQAUAAAICAAAgJ/riig28TUAAAA+AAAACQAkAAAAAAAAAAAAAAAAAAAAbWV0YS5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0BUEsFBgAAAAABAAEAWwAAAIAAAAAAAA==
+    dataString: UEsDBBQAAAgIAACAn+uJCvsXVQIAAOIEAAALACQAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQFlVMmS2jAQ/RVK5zBlY9bcEmBIDrPUkFQuvgipjVXIkkuSh2Eo/j0tWWCHnGje6/V1y2cilK2BOW02RvAnzYF8HRBvky8DQgP3Rp3QCKeICKsrcEawb2ovvW+CYKNEoU215ntYausswgWVFpAy2vlohdB5QD7wZ7jwISe0RjNvfaK1SAYXNBkoB6ZzTa+e0+jXujWKSVrVwLfiEzrvUfYwif4pmsFV4UDRKwks01IKGxsi7lSHebd1CQb8xFxQnC80kTxkCJQg9qXz6fvRL0VhwcXxDT2thEGh2rTku3alz1VRe2jbe6ey8YVGk2loq0369B8/TANdGF39uNZNE1/DlYId3uiJUet68vbhVdd6GlQ6UnmgOwl/SlDPemN0oziSzjQ+tLEwWnV/b6MtS2CHDm9bvQObupP9uqP0YTafp9limq2HySwuzA90CVJ8LKWodkHWcQtspQ7qh3sAg5v6id2Ha7ExL6K+pd8WftF9/6wi8SiMdUjFkZXvdacb413JOgjoR2vcUhsFAY4T1KCodKdXTOPu93nH9creMY/UP5xYPHLXd3EXEuDOP0nuqFd9vG3Olvr4BLZ8aZwUCrqmPfGMOi21Uu259TW5hm0bU1DWC9s3gv97ZySb8WKUJRmMMsoms91wPE+mE8rZZDwuknlKSThEoXBOKl/bRqM8uDXVJVd4dNdPxmBjaB1Onxt63IjPSvckF6rQW2YA1Eub4dY4GCyCr5SvuUCBtuCcUGHf5JwTqdkBeH5LlIdJ1x/O0LzLkpNavGvnkZwsw4ckJxdy+QtQSwMEFAAACAgAAICf6xViKqttAAAAeAAAAAkAJABtZXRhLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQGrVipLLSrOzM9TslIw0TPUMzTTUVBKL0osyCgGihiCOKWZKSB2tJKxeUqakbGBcaqRcWKyqXmSromFgZlpYkqyqYlJmoGFYaJSLFB9SWVBql9ibipET0BiSUZaZl5KZl66nntRZoo7yGil2FoAUEsBAi0AFAAACAgAAICf64kK+xdVAgAA4gQAAAsAJAAAAAAAAAAAAAAAAAAAAGdyYXBoMC5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0BUEsBAi0AFAAACAgAAICf6xViKqttAAAAeAAAAAkAJAAAAAAAAAAAAAAAogIAAG1ldGEuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAVBLBQYAAAAAAgACALgAAABaAwAAAAA=
     upgradeData: 
     file_cachedStartup: {fileID: 0}
     data_cachedStartup: 
@@ -440,7 +440,7 @@ MonoBehaviour:
   showUnwalkableNodes: 1
   debugMode: 0
   debugFloor: 0
-  debugRoof: 20000
+  debugRoof: 1
   manualDebugFloorRoof: 0
   showSearchTree: 0
   unwalkableNodeDebugSize: 0.3
@@ -471,7 +471,7 @@ MonoBehaviour:
     seed: 0
     pivotPointRoot: {fileID: 0}
     spreadOutCount: 1
-  showGraphs: 0
+  showGraphs: 1
 --- !u!1001 &2133253156
 Prefab:
   m_ObjectHideFlags: 0

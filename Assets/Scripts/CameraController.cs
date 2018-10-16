@@ -8,7 +8,7 @@ public class CameraController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        Vector3 positionOfCenterOfRoom = gameController.currentRoomController.PositionOfCenter();
+        Vector3 positionOfCenterOfRoom = gameController.currentRoomController.room.PositionOfCenter();
         transform.position = new Vector3(positionOfCenterOfRoom.x, positionOfCenterOfRoom.y, transform.position.z);
 	}
 }

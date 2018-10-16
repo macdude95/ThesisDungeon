@@ -22,6 +22,7 @@ public class Room
             return roomConnections.Count == 0;
         }
     }
+    public bool? stairsFacingLeft;
 
     public Room(Vector3Int location, int width, int length, float density, List<RoomConnection> roomConnections, bool isEntrance = false)
     {
@@ -39,6 +40,36 @@ public class Room
         this.Grid = new Tile[this.width, this.length];
         if (notAccessible) { return; }
         setupWalls();
+    }
+
+    public Vector3Int EntrancePositionOfRoomConnection(RoomConnection roomConnection)
+    {
+        Vector3Int roomConnectionPosition = PositionOfRoomConnection(roomConnection);
+        Vector3Int offset = Vector3Int.zero;
+        switch (roomConnection)
+        {
+            case RoomConnection.North:
+                offset = Vector3Int.down;
+                break;
+            case RoomConnection.South:
+                offset = Vector3Int.up;
+                break;
+            case RoomConnection.East:
+                offset = Vector3Int.left;
+                break;
+            case RoomConnection.West:
+                offset = Vector3Int.right;
+                break;
+            case RoomConnection.Down:
+            case RoomConnection.Up:
+                // depends on if it is facing right or left
+                offset = stairsFacingLeft.Value ? Vector3Int.left : Vector3Int.right;
+                Debug.Log("stairs are facing right? " + stairsFacingLeft);
+                break;
+
+        }
+
+        return roomConnectionPosition + offset;
     }
 
     private void setupWalls()
@@ -84,7 +115,9 @@ public class Room
             Grid[center.x + i, center.y + 1].type = TileType.Wall;
             Grid[center.x + i, center.y - 1].type = TileType.Wall;
         }
-        int xPositionOfBackWall = Random.Range(0, 2) == 0 ? center.x + 1 : center.x - 1;
+        bool stairsFacingLeft = Random.Range(0, 2) == 0;
+        this.stairsFacingLeft = stairsFacingLeft;
+        int xPositionOfBackWall = stairsFacingLeft ? center.x + 1 : center.x - 1;
         Grid[xPositionOfBackWall, center.y].type = TileType.Wall;
     }
 

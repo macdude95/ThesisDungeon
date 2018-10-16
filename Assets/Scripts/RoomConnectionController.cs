@@ -8,7 +8,7 @@ public class RoomConnectionController : MonoBehaviour {
     public Sprite downstairsSprite;
     private RoomConnection roomConnection;
 
-    public void SetRoomConnection(RoomConnection roomConnection)
+    public void SetRoomConnection(RoomConnection roomConnection, bool? stairsFacingLeft)
     {
         this.roomConnection = roomConnection;
         switch(roomConnection)
@@ -16,7 +16,12 @@ public class RoomConnectionController : MonoBehaviour {
             case RoomConnection.Up:
             case RoomConnection.Down:
                 SpriteRenderer spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
-                spriteRenderer.sprite = roomConnection == RoomConnection.Up ? upstairsSprite : downstairsSprite; 
+                spriteRenderer.sprite = roomConnection == RoomConnection.Up ? upstairsSprite : downstairsSprite;
+                if (stairsFacingLeft.HasValue)
+                {
+                    // the upstairs and downstairs sprites are facing opposite directions
+                    spriteRenderer.flipX = (roomConnection == RoomConnection.Up) ? !stairsFacingLeft.Value : stairsFacingLeft.Value;
+                }
                 break;
             default:
                 break;

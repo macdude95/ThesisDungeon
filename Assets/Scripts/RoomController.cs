@@ -39,14 +39,9 @@ public class RoomController : MonoBehaviour
             Vector3Int offset = room.PositionOfRoomConnection(rc);
             GameObject roomConnection = Instantiate(RoomConnectionPrefab, transform);
             roomConnection.transform.position = offset;
-            roomConnection.GetComponent<RoomConnectionController>().SetRoomConnection(rc);
+            roomConnection.GetComponent<RoomConnectionController>().SetRoomConnection(rc, room.stairsFacingLeft);
             roomConnections.Add(roomConnection);
         }
-    }
-
-    public Vector3Int PositionOfCenter()
-    {
-        return room.PositionOfCenter();
     }
 
     private void CreateWallObjects() 
