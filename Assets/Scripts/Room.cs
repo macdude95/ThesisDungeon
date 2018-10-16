@@ -1,73 +1,111 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System;
 using UnityEngine;
 using SettlersEngine;
 
-public enum RoomConnection { North, South, East, West }//, Up, Down, NextLevel }
+public enum RoomConnection { North, South, East, West, Up, Down, NextLevel }
 
 public class Room 
 {
     public const int MaximumWidth = 20;
-    public const int MaximumHeight = 13;
-    
+    public const int MaximumLength = 13;
+
+    public readonly Vector3Int location;
     public int width;
-    public int height;
+    public int length;
     public float density;
     public Tile[,] Grid;
-    public RoomConnection[] Connections;
+    public List<RoomConnection> roomConnections;
+    public bool isEntrance;
+    public bool notAccessible {
+        get {
+            return roomConnections.Count == 0;
+        }
+    }
 
-    public Room(int width, int height, float density, RoomConnection[] roomConnections)
+    public Room(Vector3Int location, int width, int length, float density, List<RoomConnection> roomConnections, bool isEntrance = false)
     {
-        if (width <= 0 || height <= 0 || width > MaximumWidth || height > MaximumHeight || roomConnections.Length <= 0 || density < 0 || density > 1)
+        if (width <= 0 || length <= 0 || width > MaximumWidth || length > MaximumLength || density < 0 || density > 1)
         {
-            throw new ArgumentOutOfRangeException();
+            throw new System.ArgumentOutOfRangeException();
         }
 
+        this.location = location;
         this.width = System.Math.Min(width, MaximumWidth);
-        this.height = System.Math.Min(height, MaximumHeight);
+        this.length = System.Math.Min(length, MaximumLength);
         this.density = density;
-        this.Connections = roomConnections;
-        this.Grid = new Tile[this.width, this.height];
+        this.roomConnections = roomConnections;
+        this.isEntrance = isEntrance;
+        this.Grid = new Tile[this.width, this.length];
+        if (notAccessible) { return; }
         setupWalls();
     }
 
     private void setupWalls()
     {
+        if (isEntrance)
+        {
+            placeExteriorWallsAndInitializeGrid();
+            placeStairs();
+            return;
+        }
+
         // Create rooms until a valid one is complete
         bool allPathsArePossible = true;
         do
         {
-            placeExteriorWalls();
+            placeExteriorWallsAndInitializeGrid();
+            placeStairs();
             placeInteriorWalls();
 
             SpatialAStar<Tile, System.Object> aStar = new SpatialAStar<Tile, System.Object>(Grid);
             allPathsArePossible = true;
 
             // Check to make sure all paths are possible
-            RoomConnection connection = Connections[0]; // if all can connect to this connection, then they can all connect to each other
-            Vector3Int position1 = PositionOfRoomConnection(connection);
-            foreach (RoomConnection otherConnection in Connections)
+            RoomConnection connection = roomConnections[0]; // if all can connect to this connection, then they can all connect to each other
+            foreach (RoomConnection otherConnection in roomConnections)
             {
                 if (connection == otherConnection) { continue; }
-                Vector3Int position2 = PositionOfRoomConnection(otherConnection);
 
                 LinkedList<Tile> path = aStar.Search(PositionOfRoomConnection(connection), PositionOfRoomConnection(otherConnection), null);
                 bool pathIsPossible = path != null;
-                Debug.Log("Is there a path between " + connection + " and " + otherConnection + "?: " + pathIsPossible);
                 if (!pathIsPossible) { allPathsArePossible = false; }
             }
         } while (!allPathsArePossible);
     }
 
-    private void placeExteriorWalls()
+    private void placeStairs()
+    {
+        if (!hasStairs()) { return; }
+        Vector3Int center = PositionOfCenter();
+        Grid[center.x, center.y].type = roomConnections.Contains(RoomConnection.Up) ? TileType.Upstairs : TileType.Downstairs;
+        for (int i = -1; i <= 1; i++) 
+        {
+            Grid[center.x + i, center.y + 1].type = TileType.Wall;
+            Grid[center.x + i, center.y - 1].type = TileType.Wall;
+        }
+        int xPositionOfBackWall = Random.Range(0, 2) == 0 ? center.x + 1 : center.x - 1;
+        Grid[xPositionOfBackWall, center.y].type = TileType.Wall;
+    }
+
+    private bool hasStairs() {
+        return roomConnections.Contains(RoomConnection.Up) || roomConnections.Contains(RoomConnection.Down);
+    }
+
+    private void placeExteriorWallsAndInitializeGrid()
     {
         for (int x = 0; x < width; x++)
         {
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < length; y++)
             {
-                Grid[x, y] = new Tile(TileType.Ground);
-                bool isOnEdge = x == width - 1 || x == 0 || y == height - 1 || y == 0;
+                if (Grid[x,y] == null)
+                {
+                    Grid[x, y] = new Tile(TileType.Ground);
+                }
+                else {
+                    Grid[x, y].type = TileType.Ground;
+                }
+                bool isOnEdge = x == width - 1 || x == 0 || y == length - 1 || y == 0;
                 if (isOnEdge)
                 {
                     Grid[x, y].type = TileType.Wall;
@@ -75,7 +113,7 @@ public class Room
             }
         }
 
-        foreach (RoomConnection connection in Connections)
+        foreach (RoomConnection connection in roomConnections)
         {
             Vector3Int connectionPosition = PositionOfRoomConnection(connection);
             Grid[connectionPosition.x, connectionPosition.y].type = TileType.Ground;
@@ -87,8 +125,8 @@ public class Room
         int occupiedSpots = 0;
         while (occupiedSpots < NumberOfInteriorWalls())
         {
-            int x = UnityEngine.Random.Range(1, width - 1);
-            int y = UnityEngine.Random.Range(1, height - 1);
+            int x = Random.Range(1, width - 1);
+            int y = Random.Range(1, length - 1);
             if (Grid[x, y].type == TileType.Ground)
             {
                 Grid[x, y].type = TileType.Wall;
@@ -104,7 +142,7 @@ public class Room
         {
             case RoomConnection.North:
                 x = width / 2;
-                y = height - 1;
+                y = length - 1;
                 break;
             case RoomConnection.South:
                 x = width / 2;
@@ -112,35 +150,69 @@ public class Room
                 break;
             case RoomConnection.East:
                 x = width - 1;
-                y = height / 2;
+                y = length / 2;
                 break;
             case RoomConnection.West:
                 x = 0;
-                y = height / 2;
+                y = length / 2;
                 break;
+            case RoomConnection.Up:
+            case RoomConnection.Down:
+            case RoomConnection.NextLevel:
+                x = width / 2;
+                y = length / 2;
+                break;
+
 
         }
         return new Vector3Int(x, y, 0);
     }
 
-    public Vector3 PositionOfCenter() 
+    public Vector3Int PositionOfCenter() 
     {
-        Vector3Int eastPosition = PositionOfRoomConnection(RoomConnection.East);
-        Vector3Int westPosition = PositionOfRoomConnection(RoomConnection.West);
-
-        return Vector3.Lerp(eastPosition, westPosition, 0.5f);
+        return PositionOfRoomConnection(RoomConnection.Up);
     }
 
     public int NumberOfExteriorWalls()
     {
-        // TODO: Fix this?? i might actualyl need to subtract certain room connections to be more accurate
-        return width * 2 + height * 2 - 4; // subtract 4 because corners are counted twice
+        int total = width * 2 + length * 2 - 4; // subtract 4 because corners are counted twice
+        int numOfExteriorConnections = 0;
+        RoomConnection[] exteriorConnections = { RoomConnection.North, RoomConnection.South, RoomConnection.East, RoomConnection.West };
+        foreach (RoomConnection rc in exteriorConnections)
+        {
+            if (roomConnections.Contains(rc))
+            {
+                numOfExteriorConnections += 1;
+            }
+        }
+        return total - numOfExteriorConnections;
     }
 
     public int NumberOfInteriorWalls()
-    {
-        return (int)((width - 2) * (height - 2) * density);
+    {   int totelNum = (int)((width - 2) * (length - 2) * density);
+        int numOfUpOrDownWalls = hasStairs() ? 9 : 0;
+        return totelNum - numOfUpOrDownWalls;
     }
 
+    public static RoomConnection oppositeOfRoomConnection(RoomConnection roomConnection)
+    {
+        switch (roomConnection)
+        {
+            case RoomConnection.North:
+                return RoomConnection.South;
+            case RoomConnection.South:
+                return RoomConnection.North;
+            case RoomConnection.East:
+                return RoomConnection.West;
+            case RoomConnection.West:
+                return RoomConnection.East;
+            case RoomConnection.Up:
+                return RoomConnection.Down;
+            case RoomConnection.Down:
+                return RoomConnection.Up;
+            default:
+                return RoomConnection.NextLevel;
+        }
+    }
 
 }

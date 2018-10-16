@@ -4,10 +4,16 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
 
-	public Rigidbody2D rigidBody;
+	private Rigidbody2D rigidBody;
 	public float walkSpeed = 5f;
 
-	void FixedUpdate() {
+    private void Awake()
+    {
+        rigidBody = GetComponent<Rigidbody2D>();
+    }
+
+    void FixedUpdate() 
+    {
 		rigidBody.velocity = new Vector2(Input.GetAxis("Horizontal") * walkSpeed, Input.GetAxis("Vertical") * walkSpeed);
 	}
 }
