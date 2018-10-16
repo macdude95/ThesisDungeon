@@ -23,6 +23,18 @@ public class Room
         }
     }
     public bool? stairsFacingLeft;
+    private List<Vector3Int> listOfEntrancePositoins {
+        get
+        {
+            List<Vector3Int> list = new List<Vector3Int>();
+
+            foreach (RoomConnection roomConnection in roomConnections) {
+                list.Add(EntrancePositionOfRoomConnection(roomConnection));
+            }
+
+            return list;
+        }
+    }
 
     public Room(Vector3Int location, int width, int length, float density, List<RoomConnection> roomConnections, bool isEntrance = false)
     {
@@ -64,7 +76,6 @@ public class Room
             case RoomConnection.Up:
                 // depends on if it is facing right or left
                 offset = stairsFacingLeft.Value ? Vector3Int.left : Vector3Int.right;
-                Debug.Log("stairs are facing right? " + stairsFacingLeft);
                 break;
 
         }
@@ -156,14 +167,19 @@ public class Room
     private void placeInteriorWalls()
     {
         int occupiedSpots = 0;
+        List<Vector3Int> entrancePositions = listOfEntrancePositoins;
         while (occupiedSpots < NumberOfInteriorWalls())
         {
             int x = Random.Range(1, width - 1);
             int y = Random.Range(1, length - 1);
-            if (Grid[x, y].type == TileType.Ground)
+            if (Grid[x, y].type == TileType.Ground && !listOfEntrancePositoins.Contains(new Vector3Int(x,y,0)))
             {
                 Grid[x, y].type = TileType.Wall;
                 occupiedSpots++;
+            }
+            if (Grid[x, y].type == TileType.Ground && listOfEntrancePositoins.Contains(new Vector3Int(x, y, 0)))
+            {
+                Debug.Log("can't put a tile here because it would block the door!");
             }
         }
     }
