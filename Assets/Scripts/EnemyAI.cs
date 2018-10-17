@@ -7,13 +7,12 @@ using Pathfinding;
 [RequireComponent(typeof(Seeker))]
 public class EnemyAI : MonoBehaviour {
 
-    public Transform target;
-
     // How many times per second we want to update our path
     public float updateRate = 2f;
 
     private Seeker seeker;
     private Rigidbody2D rb;
+    private Transform target;
 
     // The calculated path
     public Path path;
@@ -31,16 +30,37 @@ public class EnemyAI : MonoBehaviour {
     // The waypoint we are currently moving towards
     private int currentWaypoint = 0;
 
-    private void Start()
+    private void Awake()
     {
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
+        findPlayer();
+    }
 
-        if (target == null) {
-            //Debug.LogError("No target found.");
+    private void OnEnable()
+    {
+        //findPlayer();
+        StartCoroutine(UpdatePath());
+    }
+
+
+
+    public void findPlayer()
+    {
+        GameObject playerObject = GameObject.FindWithTag("Player");
+        if (playerObject == null)
+        {
+            Debug.LogError("Player not found in scene.");
             return;
         }
+        else
+        {
+            target = playerObject.transform;
+        }
+    }
 
+    private void Start()
+    {
         // Start a new path to the target position and return the result to the OnPathCOmplete method
         seeker.StartPath(transform.position, target.position, OnPathComplete);
 
@@ -48,11 +68,6 @@ public class EnemyAI : MonoBehaviour {
     }
 
     IEnumerator UpdatePath() {
-        if (target == null) {
-            // TODO: Insert player search here
-            yield return false;
-        }
-
         seeker.StartPath(transform.position, target.position, OnPathComplete);
 
         yield return new WaitForSeconds(1f / updateRate);
@@ -70,12 +85,6 @@ public class EnemyAI : MonoBehaviour {
 
     private void FixedUpdate()
     {
-        if (target == null)
-        {
-            // TODO: Insert player search here
-            return;
-        }
-
         if (path == null) {
             return;
         }

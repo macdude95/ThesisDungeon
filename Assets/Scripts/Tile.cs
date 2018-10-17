@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using SettlersEngine;
 
-public enum TileType { Ground, Wall, Upstairs, Downstairs };
+public enum TileType { Ground, Wall, Upstairs, Downstairs, Enemy };
 
 public class Tile : IPathNode<System.Object>
 {

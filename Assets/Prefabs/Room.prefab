@@ -95,6 +95,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RoomConnectionPrefab: {fileID: 1386312778589932, guid: 53db11fdba4e44c78b25a5bfebe72298,
     type: 2}
+  EnemyPrefab: {fileID: 1900269504030262, guid: c32b495191ca44e0e843ce64689a78b1,
+    type: 2}
   WallSprite: {fileID: 21300002, guid: 3198fb5d7bfb742ee98c50b1f6a9f045, type: 3}
   WallWithNothingBelowSprite: {fileID: 21300004, guid: 3198fb5d7bfb742ee98c50b1f6a9f045,
     type: 3}

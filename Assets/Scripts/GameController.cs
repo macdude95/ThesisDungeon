@@ -55,6 +55,15 @@ public class GameController : MonoBehaviour
     {
         roomController.gameObject.SetActive(true);
         player.transform.position = position;
+        resetAStarPathingSystem();
+    }
+
+    private void resetAStarPathingSystem()
+    {
+        int width = (int)(currentRoomController.room.width / AstarPath.active.data.gridGraph.nodeSize);
+        int length = (int)(currentRoomController.room.length / AstarPath.active.data.gridGraph.nodeSize);
+        AstarPath.active.data.gridGraph.center = currentRoomController.room.PositionOfCenter();
+        //AstarPath.active.data.gridGraph.SetDimensions(width, length, AstarPath.active.data.gridGraph.nodeSize);
         AstarPath.active.Scan();
     }
 

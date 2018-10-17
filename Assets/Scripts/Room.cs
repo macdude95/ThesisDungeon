@@ -2,19 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 using SettlersEngine;
+using ExtensionMethods;
 
 public enum RoomConnection { North, South, East, West, Up, Down, NextLevel }
 
 public class Room 
 {
-    public const int MaximumWidth = 20;
-    public const int MaximumLength = 13;
-
     public readonly Vector3Int location;
     public readonly int width;
     public readonly int length;
     public readonly float density;
-    public readonly Tile[,] Grid;
+    public readonly int numberOfEnemies;
+    public readonly Tile[,] grid;
     public readonly List<RoomConnection> roomConnections;
     public readonly bool isEntrance;
     public bool notAccessible {
@@ -35,23 +34,25 @@ public class Room
     }
     private Level level;
 
-    public Room(Level level, Vector3Int location, int width, int length, float density, List<RoomConnection> roomConnections, bool isEntrance = false)
+    public Room(Level level, Vector3Int location, int width, int length, float density, List<RoomConnection> roomConnections, bool isEntrance = false, int numberOfEnemies = 2)
     {
-        if (width <= 0 || length <= 0 || width > MaximumWidth || length > MaximumLength || density < 0 || density > 1)
+        if (width <= 0 || length <= 0 || density < 0 || density > 1)
         {
             throw new System.ArgumentOutOfRangeException();
         }
 
         this.level = level;
         this.location = location;
-        this.width = System.Math.Min(width, MaximumWidth);
-        this.length = System.Math.Min(length, MaximumLength);
+        this.width = width;
+        this.length = length;
         this.density = density;
+        this.numberOfEnemies = numberOfEnemies;
         this.roomConnections = roomConnections;
         this.isEntrance = isEntrance;
-        this.Grid = new Tile[this.width, this.length];
+        this.grid = new Tile[this.width, this.length];
         if (notAccessible) { return; }
         setupWalls();
+        placeEnemies();
     }
 
     public Vector3Int EntrancePositionOfRoomConnection(RoomConnection roomConnection)
@@ -83,6 +84,32 @@ public class Room
         return roomConnectionPosition + offset;
     }
 
+    private void placeEnemies()
+    {
+        List<Vector2Int> emptySpots = new List<Vector2Int>();
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < length; y++)
+            {
+                if(grid[x,y].type == TileType.Ground)
+                {
+                    emptySpots.Add(new Vector2Int(x, y));
+                }
+            }
+        }
+
+        emptySpots.Shuffle();
+        for (int i = 0; i < numberOfEnemies; i++)
+        {
+            if (i >= emptySpots.Count)
+            {
+                Debug.LogError("You can't have " + numberOfEnemies + " enemies in a room with only " + emptySpots.Count + " empty spots.");
+            }
+            Vector2Int spot = emptySpots[i];
+            grid[spot.x, spot.y].type = TileType.Enemy;
+        }
+    }
+
     private void setupWalls()
     {
         if (isEntrance)
@@ -100,7 +127,7 @@ public class Room
             placeStairWalls();
             placeInteriorWalls();
 
-            SpatialAStar<Tile, System.Object> aStar = new SpatialAStar<Tile, System.Object>(Grid);
+            SpatialAStar<Tile, System.Object> aStar = new SpatialAStar<Tile, System.Object>(grid);
             allPathsArePossible = true;
 
             // Check to make sure all paths are possible
@@ -120,17 +147,17 @@ public class Room
     {
         if (!hasStairs()) { return; }
         Vector3Int center = PositionOfCenter();
-        Grid[center.x, center.y].type = roomConnections.Contains(RoomConnection.Up) ? TileType.Upstairs : TileType.Downstairs;
+        grid[center.x, center.y].type = roomConnections.Contains(RoomConnection.Up) ? TileType.Upstairs : TileType.Downstairs;
         for (int i = -1; i <= 1; i++) 
         {
-            Grid[center.x + i, center.y + 1].type = TileType.Wall;
-            Grid[center.x + i, center.y - 1].type = TileType.Wall;
+            grid[center.x + i, center.y + 1].type = TileType.Wall;
+            grid[center.x + i, center.y - 1].type = TileType.Wall;
         }
         // If the room connection is DOWN, then randomly choose left or right. If UP then it depends on the above room
         this.stairsFacingLeft = roomConnections.Contains(RoomConnection.Down) ? Random.Range(0, 2) == 0 : !level.rooms[location.x, location.y, location.z + 1].stairsFacingLeft;
 
         int xPositionOfBackWall = stairsFacingLeft.Value ? center.x + 1 : center.x - 1;
-        Grid[xPositionOfBackWall, center.y].type = TileType.Wall;
+        grid[xPositionOfBackWall, center.y].type = TileType.Wall;
     }
 
     private bool hasStairs() {
@@ -143,17 +170,17 @@ public class Room
         {
             for (int y = 0; y < length; y++)
             {
-                if (Grid[x,y] == null)
+                if (grid[x,y] == null)
                 {
-                    Grid[x, y] = new Tile(TileType.Ground);
+                    grid[x, y] = new Tile(TileType.Ground);
                 }
                 else {
-                    Grid[x, y].type = TileType.Ground;
+                    grid[x, y].type = TileType.Ground;
                 }
                 bool isOnEdge = x == width - 1 || x == 0 || y == length - 1 || y == 0;
                 if (isOnEdge)
                 {
-                    Grid[x, y].type = TileType.Wall;
+                    grid[x, y].type = TileType.Wall;
                 }
             }
         }
@@ -161,7 +188,7 @@ public class Room
         foreach (RoomConnection connection in roomConnections)
         {
             Vector3Int connectionPosition = PositionOfRoomConnection(connection);
-            Grid[connectionPosition.x, connectionPosition.y].type = TileType.Ground;
+            grid[connectionPosition.x, connectionPosition.y].type = TileType.Ground;
         }
     }
 
@@ -173,9 +200,9 @@ public class Room
         {
             int x = Random.Range(1, width - 1);
             int y = Random.Range(1, length - 1);
-            if (Grid[x, y].type == TileType.Ground && !listOfEntrancePositoins.Contains(new Vector3Int(x,y,0)))
+            if (grid[x, y].type == TileType.Ground && !listOfEntrancePositoins.Contains(new Vector3Int(x,y,0)))
             {
-                Grid[x, y].type = TileType.Wall;
+                grid[x, y].type = TileType.Wall;
                 occupiedSpots++;
             }
         }

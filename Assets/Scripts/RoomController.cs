@@ -6,6 +6,7 @@ using Pathfinding;
 public class RoomController : MonoBehaviour
 {
     public GameObject RoomConnectionPrefab;
+    public GameObject EnemyPrefab;
     public Sprite WallSprite;
     public Sprite WallWithNothingBelowSprite;
     public Sprite GroundSprite;
@@ -13,12 +14,14 @@ public class RoomController : MonoBehaviour
     private List<GameObject> wallObjects;
     private List<GameObject> roomConnectionObjects;
     private List<GameObject> groundObjects;
+    private List<GameObject> enemyObjects;
 
     void Awake()
     {
         wallObjects = new List<GameObject>();
         roomConnectionObjects = new List<GameObject>();
         groundObjects = new List<GameObject>();
+        enemyObjects = new List<GameObject>();
     }
 
     public void SetupRoom(Room room)
@@ -51,7 +54,7 @@ public class RoomController : MonoBehaviour
         {
             for (int y = 0; y < room.length; y++)
             {
-                PositionTile(room.Grid[x, y].type, new Vector2Int(x, y));
+                PositionTile(room.grid[x, y].type, new Vector2Int(x, y));
             }
         }
     }
@@ -61,19 +64,22 @@ public class RoomController : MonoBehaviour
         Vector3Int position = new Vector3Int(position2D.x, position2D.y, 0);
         switch (type)
         {
+            case TileType.Enemy:
+                enemyObjects.Add(Instantiate(EnemyPrefab, position,Quaternion.identity, transform));
+                groundObjects.Add(createChildGameObject(type.ToString(), position, GroundSprite));
+                break;
             case TileType.Ground:
-                GameObject ground = createChildGameObject(type.ToString(), position, GroundSprite);
-                groundObjects.Add(ground);
+                groundObjects.Add(createChildGameObject(type.ToString(), position, GroundSprite));
                 break;
             case TileType.Wall:
                 Sprite useThisSprite;
                 if (position.y == 0)
                 {
                     useThisSprite = WallWithNothingBelowSprite;
-                } 
+                }
                 else
                 {
-                    TileType tileBelowType = room.Grid[position.x, position.y - 1].type;
+                    TileType tileBelowType = room.grid[position.x, position.y - 1].type;
                     if (tileBelowType == TileType.Wall || tileBelowType == TileType.Upstairs) {
                         useThisSprite = WallSprite;
                     }
