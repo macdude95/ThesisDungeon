@@ -25,12 +25,22 @@ public class GameController : MonoBehaviour
 
     public void enterRoomConnection(RoomConnection roomConnection)
     {
+        if (roomConnection == RoomConnection.NextLevel)
+        {
+            exitLevel();
+            return;
+        }
         currentRoomController.gameObject.SetActive(false);
         currentRoomLocation = Level.getNextRoomLocation(currentRoomController.room, roomConnection);
         RoomController nextRoom = currentRoomController;
         RoomConnection entranceConnection = Room.oppositeOfRoomConnection(roomConnection);
         Vector3Int playerStartingPositionInNextRoom = nextRoom.room.EntrancePositionOfRoomConnection(entranceConnection);
         PutPlayerInRoomAtPosition(nextRoom, playerStartingPositionInNextRoom);
+    }
+
+    private void exitLevel()
+    {
+        print("Level Complete!");
     }
 
     private void Start()

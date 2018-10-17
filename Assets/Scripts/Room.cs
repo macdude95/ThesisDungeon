@@ -11,12 +11,12 @@ public class Room
     public const int MaximumLength = 13;
 
     public readonly Vector3Int location;
-    public int width;
-    public int length;
-    public float density;
-    public Tile[,] Grid;
-    public List<RoomConnection> roomConnections;
-    public bool isEntrance;
+    public readonly int width;
+    public readonly int length;
+    public readonly float density;
+    public readonly Tile[,] Grid;
+    public readonly List<RoomConnection> roomConnections;
+    public readonly bool isEntrance;
     public bool notAccessible {
         get {
             return roomConnections.Count == 0;
@@ -27,11 +27,9 @@ public class Room
         get
         {
             List<Vector3Int> list = new List<Vector3Int>();
-
             foreach (RoomConnection roomConnection in roomConnections) {
                 list.Add(EntrancePositionOfRoomConnection(roomConnection));
             }
-
             return list;
         }
     }
@@ -90,7 +88,7 @@ public class Room
         if (isEntrance)
         {
             placeExteriorWallsAndInitializeGrid();
-            placeStairs();
+            placeStairWalls();
             return;
         }
 
@@ -99,7 +97,7 @@ public class Room
         do
         {
             placeExteriorWallsAndInitializeGrid();
-            placeStairs();
+            placeStairWalls();
             placeInteriorWalls();
 
             SpatialAStar<Tile, System.Object> aStar = new SpatialAStar<Tile, System.Object>(Grid);
@@ -118,7 +116,7 @@ public class Room
         } while (!allPathsArePossible);
     }
 
-    private void placeStairs()
+    private void placeStairWalls()
     {
         if (!hasStairs()) { return; }
         Vector3Int center = PositionOfCenter();

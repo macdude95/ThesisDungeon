@@ -5,19 +5,20 @@ using Pathfinding;
 
 public class RoomController : MonoBehaviour
 {
-
-    public GameObject WallPrefab;
     public GameObject RoomConnectionPrefab;
+    public Sprite WallSprite;
+    public Sprite WallWithNothingBelowSprite;
+    public Sprite GroundSprite;
     public Room room;
     private List<GameObject> wallObjects;
-    private int currentWall = 0;
-    private List<GameObject> roomConnections;
+    private List<GameObject> roomConnectionObjects;
+    private List<GameObject> groundObjects;
 
     void Awake()
     {
         wallObjects = new List<GameObject>();
-        CreateWallObjects();
-        roomConnections = new List<GameObject>();
+        roomConnectionObjects = new List<GameObject>();
+        groundObjects = new List<GameObject>();
     }
 
     public void SetupRoom(Room room)
@@ -29,40 +30,23 @@ public class RoomController : MonoBehaviour
         }
 
         // Put the wall gameobjects in the right positions
-        PositionTiles();
+        CreateTiles();
         CreateRoomConnectionBoxColliders();
     }
 
     private void CreateRoomConnectionBoxColliders() {
-        foreach(RoomConnection rc in room.roomConnections)
+        foreach(RoomConnection roomConnection in room.roomConnections)
         {
-            Vector3Int offset = room.PositionOfRoomConnection(rc);
-            GameObject roomConnection = Instantiate(RoomConnectionPrefab, transform);
-            roomConnection.transform.position = offset;
-            roomConnection.GetComponent<RoomConnectionController>().SetRoomConnection(rc, room.stairsFacingLeft);
-            roomConnections.Add(roomConnection);
+            Vector3Int offset = room.PositionOfRoomConnection(roomConnection);
+            GameObject roomConnectionObject = Instantiate(RoomConnectionPrefab, transform);
+            roomConnectionObject.transform.position = offset;
+            roomConnectionObject.GetComponent<RoomConnectionController>().SetRoomConnection(roomConnection, room.stairsFacingLeft);
+            roomConnectionObjects.Add(roomConnectionObject);
         }
     }
 
-    private void CreateWallObjects() 
+    private void CreateTiles() 
     {
-        for (int i = 0; i < Room.MaximumLength * Room.MaximumWidth; i++)
-        {
-            GameObject w = Instantiate(WallPrefab, gameObject.transform);
-            w.SetActive(false);
-            wallObjects.Add(w);
-        }
-    }
-
-    private void PositionTiles() 
-    {
-        if (room.Grid == null) {
-            print("room grid is null");
-            if (room != null) {
-                print("room itself it not null");
-            }
-        }
-        currentWall = 0;
         for (int x = 0; x < room.width; x++)
         {
             for (int y = 0; y < room.length; y++)
@@ -72,19 +56,51 @@ public class RoomController : MonoBehaviour
         }
     }
 
-    private void PositionTile(TileType type, Vector2Int position2D) {
+    private void PositionTile(TileType type, Vector2Int position2D) 
+    {
         Vector3Int position = new Vector3Int(position2D.x, position2D.y, 0);
         switch (type)
         {
             case TileType.Ground:
+                GameObject ground = createChildGameObject(type.ToString(), position, GroundSprite);
+                groundObjects.Add(ground);
                 break;
             case TileType.Wall:
-                GameObject wall = wallObjects[currentWall];
-                wall.transform.position = position;
-                wall.SetActive(true);
-                currentWall++;
+                Sprite useThisSprite;
+                if (position.y == 0)
+                {
+                    useThisSprite = WallWithNothingBelowSprite;
+                } 
+                else
+                {
+                    TileType tileBelowType = room.Grid[position.x, position.y - 1].type;
+                    if (tileBelowType == TileType.Wall || tileBelowType == TileType.Upstairs) {
+                        useThisSprite = WallSprite;
+                    }
+                    else 
+                    {
+                        useThisSprite = WallWithNothingBelowSprite;
+                    }
+                }
+                GameObject wall = createChildGameObject(type.ToString(), position, useThisSprite);
+                BoxCollider2D boxCollider = wall.AddComponent<BoxCollider2D>();
+                boxCollider.usedByComposite = true;
+                wallObjects.Add(wall);
                 break;
         }
+    }
+
+    private GameObject createChildGameObject(string childObjectName, Vector3Int position, Sprite sprite = null)
+    {
+        GameObject childGameObject = new GameObject(childObjectName);
+        childGameObject.transform.parent = gameObject.transform;
+        childGameObject.transform.position = position;
+        if (sprite != null)
+        {
+            SpriteRenderer spriteRenderer = childGameObject.AddComponent<SpriteRenderer>();
+            spriteRenderer.sprite = sprite;
+        }
+        return childGameObject;
     }
 
 }

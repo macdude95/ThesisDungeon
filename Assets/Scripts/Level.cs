@@ -36,7 +36,7 @@ public class Level
             this.location = new Vector3Int(x, y, z);
         }
 
-        public Room BuildRoom(Level level, int width = 13, int length = 13, float density = 0.3f)
+        public Room BuildRoom(Level level, int width = 13, int length = 13, float density = 0.15f)
         {
             RoomConnection[] roomConnectionsArray = new RoomConnection[roomConnections.Count];
             roomConnections.CopyTo(roomConnectionsArray);

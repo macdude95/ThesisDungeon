@@ -93,6 +93,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2c7da8657c794d56bc1c08f5c6ca038, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  WallPrefab: {fileID: 1898474690905426, guid: ae9f74b1a48c042af9eee97e260a7e38, type: 2}
   RoomConnectionPrefab: {fileID: 1386312778589932, guid: 53db11fdba4e44c78b25a5bfebe72298,
     type: 2}
+  WallSprite: {fileID: 21300002, guid: 3198fb5d7bfb742ee98c50b1f6a9f045, type: 3}
+  WallWithNothingBelowSprite: {fileID: 21300004, guid: 3198fb5d7bfb742ee98c50b1f6a9f045,
+    type: 3}
+  GroundSprite: {fileID: 21300000, guid: 3198fb5d7bfb742ee98c50b1f6a9f045, type: 3}
