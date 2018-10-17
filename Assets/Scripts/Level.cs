@@ -36,11 +36,11 @@ public class Level
             this.location = new Vector3Int(x, y, z);
         }
 
-        public Room BuildRoom( int width = 13, int length = 13, float density = 0.3f)
+        public Room BuildRoom(Level level, int width = 13, int length = 13, float density = 0.3f)
         {
             RoomConnection[] roomConnectionsArray = new RoomConnection[roomConnections.Count];
             roomConnections.CopyTo(roomConnectionsArray);
-            this.room = new Room(location, width, length, density, roomConnections.ToList(), isEntrance);
+            this.room = new Room(level, location, width, length, density, roomConnections.ToList(), isEntrance);
             return this.room;
         }
     }
@@ -86,13 +86,13 @@ public class Level
 
     private void buildRooms()
     {
-        for (int z = 0; z < height; z++)
+        for (int z = height - 1; z >= 0; z--)
         {
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < length; y++)
                 {
-                    rooms[x, y, z] = roomBuilders[x, y, z].BuildRoom();
+                    rooms[x, y, z] = roomBuilders[x, y, z].BuildRoom(this);
                 }
             }
         }

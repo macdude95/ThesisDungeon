@@ -35,14 +35,16 @@ public class Room
             return list;
         }
     }
+    private Level level;
 
-    public Room(Vector3Int location, int width, int length, float density, List<RoomConnection> roomConnections, bool isEntrance = false)
+    public Room(Level level, Vector3Int location, int width, int length, float density, List<RoomConnection> roomConnections, bool isEntrance = false)
     {
         if (width <= 0 || length <= 0 || width > MaximumWidth || length > MaximumLength || density < 0 || density > 1)
         {
             throw new System.ArgumentOutOfRangeException();
         }
 
+        this.level = level;
         this.location = location;
         this.width = System.Math.Min(width, MaximumWidth);
         this.length = System.Math.Min(length, MaximumLength);
@@ -126,9 +128,10 @@ public class Room
             Grid[center.x + i, center.y + 1].type = TileType.Wall;
             Grid[center.x + i, center.y - 1].type = TileType.Wall;
         }
-        bool stairsFacingLeft = Random.Range(0, 2) == 0;
-        this.stairsFacingLeft = stairsFacingLeft;
-        int xPositionOfBackWall = stairsFacingLeft ? center.x + 1 : center.x - 1;
+        // If the room connection is DOWN, then randomly choose left or right. If UP then it depends on the above room
+        this.stairsFacingLeft = roomConnections.Contains(RoomConnection.Down) ? Random.Range(0, 2) == 0 : !level.rooms[location.x, location.y, location.z + 1].stairsFacingLeft;
+
+        int xPositionOfBackWall = stairsFacingLeft.Value ? center.x + 1 : center.x - 1;
         Grid[xPositionOfBackWall, center.y].type = TileType.Wall;
     }
 
@@ -176,10 +179,6 @@ public class Room
             {
                 Grid[x, y].type = TileType.Wall;
                 occupiedSpots++;
-            }
-            if (Grid[x, y].type == TileType.Ground && listOfEntrancePositoins.Contains(new Vector3Int(x, y, 0)))
-            {
-                Debug.Log("can't put a tile here because it would block the door!");
             }
         }
     }

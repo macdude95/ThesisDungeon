@@ -23,14 +23,6 @@ public class GameController : MonoBehaviour
         createRooms();
     }
 
-    private void Start()
-    {
-        // start player in entrance room
-        currentRoomLocation = currentLevel.entranceRoomLocation;
-        Vector3Int entrancePosition = currentRoomController.room.PositionOfRoomConnection(RoomConnection.North) + Vector3Int.down;
-        PutPlayerInRoomAtPosition(currentRoomController, entrancePosition);
-    }
-
     public void enterRoomConnection(RoomConnection roomConnection)
     {
         currentRoomController.gameObject.SetActive(false);
@@ -41,11 +33,18 @@ public class GameController : MonoBehaviour
         PutPlayerInRoomAtPosition(nextRoom, playerStartingPositionInNextRoom);
     }
 
+    private void Start()
+    {
+        // start player in entrance room
+        currentRoomLocation = currentLevel.entranceRoomLocation;
+        Vector3Int entrancePosition = currentRoomController.room.PositionOfRoomConnection(RoomConnection.North) + Vector3Int.down;
+        PutPlayerInRoomAtPosition(currentRoomController, entrancePosition);
+    }
+
     private void PutPlayerInRoomAtPosition(RoomController roomController, Vector3Int position) 
     {
         roomController.gameObject.SetActive(true);
         player.transform.position = position;
-        player.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
         AstarPath.active.Scan();
     }
 
