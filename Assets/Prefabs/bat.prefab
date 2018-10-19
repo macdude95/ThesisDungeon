@@ -22,10 +22,10 @@ GameObject:
   - component: {fileID: 212660823395654816}
   - component: {fileID: 114818598642941624}
   - component: {fileID: 50257730125400312}
-  - component: {fileID: 114065855121514202}
   - component: {fileID: 58117690838200952}
+  - component: {fileID: 114633783146176198}
   m_Layer: 0
-  m_Name: bat
+  m_Name: Bat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -79,7 +79,7 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0.16170645}
   serializedVersion: 2
   m_Radius: 0.22846794
---- !u!114 &114065855121514202
+--- !u!114 &114633783146176198
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -87,12 +87,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1900269504030262}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dfb3bc3e94ba24bbf9283483dfd30a96, type: 3}
+  m_Script: {fileID: 11500000, guid: bc437685030cc4bf4ac0ffbd424295a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
   updateRate: 2
-  speed: 300
+  speed: 200
   forceMode: 0
   pathIsEnded: 0
   nextWaypointDistance: 0.5
@@ -121,7 +120,8 @@ MonoBehaviour:
     useGraphRaycasting: 0
   traversableTags: -1
   tagPenalties: 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-  graphMask: -1
+  graphMask:
+    value: -1
 --- !u!212 &212660823395654816
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -154,8 +154,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 196241383
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300006, guid: 73546dd51c47042b8839340fd9062b3b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

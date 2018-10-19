@@ -11,17 +11,17 @@ public class RoomController : MonoBehaviour
     public Sprite WallWithNothingBelowSprite;
     public Sprite GroundSprite;
     public Room room;
-    private List<GameObject> wallObjects;
-    private List<GameObject> roomConnectionObjects;
-    private List<GameObject> groundObjects;
-    private List<GameObject> enemyObjects;
+    private GameObject wallsContainer;
+    private GameObject roomConnectionsContainer;
+    private GameObject groundContainer;
+    private GameObject enemiesContainer;
 
     void Awake()
     {
-        wallObjects = new List<GameObject>();
-        roomConnectionObjects = new List<GameObject>();
-        groundObjects = new List<GameObject>();
-        enemyObjects = new List<GameObject>();
+        wallsContainer = createChildGameObject("Walls");
+        roomConnectionsContainer = createChildGameObject("RoomConnections");
+        groundContainer = createChildGameObject("Ground");
+        enemiesContainer = createChildGameObject("Enemies");
     }
 
     public void SetupRoom(Room room)
@@ -41,10 +41,8 @@ public class RoomController : MonoBehaviour
         foreach(RoomConnection roomConnection in room.roomConnections)
         {
             Vector3Int offset = room.PositionOfRoomConnection(roomConnection);
-            GameObject roomConnectionObject = Instantiate(RoomConnectionPrefab, transform);
-            roomConnectionObject.transform.position = offset;
+            GameObject roomConnectionObject = Instantiate(RoomConnectionPrefab, offset, Quaternion.identity, roomConnectionsContainer.transform);
             roomConnectionObject.GetComponent<RoomConnectionController>().SetRoomConnection(roomConnection, room.stairsFacingLeft);
-            roomConnectionObjects.Add(roomConnectionObject);
         }
     }
 
@@ -65,11 +63,11 @@ public class RoomController : MonoBehaviour
         switch (type)
         {
             case TileType.Enemy:
-                enemyObjects.Add(Instantiate(EnemyPrefab, position,Quaternion.identity, transform));
-                groundObjects.Add(createChildGameObject(type.ToString(), position, GroundSprite));
+                Instantiate(EnemyPrefab, position,Quaternion.identity, enemiesContainer.transform);
+                createChildGameObject(type.ToString(), position, groundContainer.transform, GroundSprite);
                 break;
             case TileType.Ground:
-                groundObjects.Add(createChildGameObject(type.ToString(), position, GroundSprite));
+                createChildGameObject(type.ToString(), position, groundContainer.transform, GroundSprite);
                 break;
             case TileType.Wall:
                 Sprite useThisSprite;
@@ -88,23 +86,31 @@ public class RoomController : MonoBehaviour
                         useThisSprite = WallWithNothingBelowSprite;
                     }
                 }
-                GameObject wall = createChildGameObject(type.ToString(), position, useThisSprite);
+                GameObject wall = createChildGameObject(type.ToString(), position, wallsContainer.transform, useThisSprite);
                 BoxCollider2D boxCollider = wall.AddComponent<BoxCollider2D>();
                 boxCollider.usedByComposite = true;
-                wallObjects.Add(wall);
                 break;
         }
     }
 
-    private GameObject createChildGameObject(string childObjectName, Vector3Int position, Sprite sprite = null)
+    private GameObject createChildGameObject(string childObjectName, Vector3Int? position = null, Transform parent = null, Sprite sprite = null)
     {
         GameObject childGameObject = new GameObject(childObjectName);
-        childGameObject.transform.parent = gameObject.transform;
-        childGameObject.transform.position = position;
+        childGameObject.transform.parent = parent == null ? gameObject.transform : parent;
+        childGameObject.transform.position = position.HasValue ? position.Value : Vector3Int.zero;
         if (sprite != null)
         {
             SpriteRenderer spriteRenderer = childGameObject.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = sprite;
+            switch (childObjectName)
+            {
+                case "Ground":
+                    spriteRenderer.sortingLayerName = "Ground";
+                    break;
+                case "Wall":
+                    spriteRenderer.sortingLayerName = "Walls";
+                    break;
+            }
         }
         return childGameObject;
     }

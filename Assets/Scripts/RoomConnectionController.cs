@@ -19,6 +19,7 @@ public class RoomConnectionController : MonoBehaviour {
             case RoomConnection.Down:
             case RoomConnection.NextLevel:
                 spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
+                spriteRenderer.sortingLayerName = "Items";
                 break;
         }
         switch(roomConnection)

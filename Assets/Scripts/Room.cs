@@ -6,7 +6,7 @@ using ExtensionMethods;
 
 public enum RoomConnection { North, South, East, West, Up, Down, NextLevel }
 
-public class Room 
+public class Room
 {
     public readonly Vector3Int location;
     public readonly int width;
@@ -34,7 +34,7 @@ public class Room
     }
     private Level level;
 
-    public Room(Level level, Vector3Int location, int width, int length, float density, List<RoomConnection> roomConnections, bool isEntrance = false, int numberOfEnemies = 2)
+    public Room(Level level, Vector3Int location, int width, int length, float density, List<RoomConnection> roomConnections, bool isEntrance = false, int numberOfEnemies = 1)
     {
         if (width <= 0 || length <= 0 || density < 0 || density > 1)
         {
@@ -148,7 +148,7 @@ public class Room
         if (!hasStairs()) { return; }
         Vector3Int center = PositionOfCenter();
         grid[center.x, center.y].type = roomConnections.Contains(RoomConnection.Up) ? TileType.Upstairs : TileType.Downstairs;
-        for (int i = -1; i <= 1; i++) 
+        for (int i = -1; i <= 1; i++)
         {
             grid[center.x + i, center.y + 1].type = TileType.Wall;
             grid[center.x + i, center.y - 1].type = TileType.Wall;
@@ -241,7 +241,7 @@ public class Room
         return new Vector3Int(x, y, 0);
     }
 
-    public Vector3Int PositionOfCenter() 
+    public Vector3Int PositionOfCenter()
     {
         return PositionOfRoomConnection(RoomConnection.Up);
     }

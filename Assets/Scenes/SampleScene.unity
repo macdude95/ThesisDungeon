@@ -126,7 +126,7 @@ GameObject:
   - component: {fileID: 425504185}
   - component: {fileID: 425504184}
   - component: {fileID: 425504183}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -193,6 +193,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   walkSpeed: 5
+  projectileSpeed: 7
+  fireRate: 4
+  ProjectilePrefab: {fileID: 1253879746253688, guid: 41de27c1552a0496b9cf4d6cf19d7358,
+    type: 2}
 --- !u!212 &425504186
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -227,7 +231,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 2091142599
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300002, guid: 0b84c0f81ed8244ac932c69d367ebec9, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -568,6 +572,26 @@ Prefab:
     - target: {fileID: 1000343174725644, guid: a276a7a2b69524703a22ca610d88cbaf, type: 2}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000343174725644, guid: a276a7a2b69524703a22ca610d88cbaf, type: 2}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 114926107891651710, guid: a276a7a2b69524703a22ca610d88cbaf,
+        type: 2}
+      propertyPath: ProjectilePrefab
+      value: 
+      objectReference: {fileID: 1253879746253688, guid: 41de27c1552a0496b9cf4d6cf19d7358,
+        type: 2}
+    - target: {fileID: 114926107891651710, guid: a276a7a2b69524703a22ca610d88cbaf,
+        type: 2}
+      propertyPath: fireRate
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 114926107891651710, guid: a276a7a2b69524703a22ca610d88cbaf,
+        type: 2}
+      propertyPath: projectileSpeed
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a276a7a2b69524703a22ca610d88cbaf, type: 2}
