@@ -197,6 +197,9 @@ MonoBehaviour:
   fireRate: 4
   ProjectilePrefab: {fileID: 1253879746253688, guid: 41de27c1552a0496b9cf4d6cf19d7358,
     type: 2}
+  HeartsPrefab: {fileID: 1260507459023750, guid: 771a7d6779c0b4c42a3097c7a25d3ebc,
+    type: 2}
+  maxHealth: 3
 --- !u!212 &425504186
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -393,6 +396,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roomPrefab: {fileID: 1309703722579688, guid: c75eeb78e9d4040379d408dbd4d85c22, type: 2}
   player: {fileID: 425504182}
+  numberOfHeartsAtStart: 3
 --- !u!1 &1405838807
 GameObject:
   m_ObjectHideFlags: 0
@@ -593,6 +597,17 @@ Prefab:
       propertyPath: projectileSpeed
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 114926107891651710, guid: a276a7a2b69524703a22ca610d88cbaf,
+        type: 2}
+      propertyPath: maxHealth
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 114926107891651710, guid: a276a7a2b69524703a22ca610d88cbaf,
+        type: 2}
+      propertyPath: HeartsPrefab
+      value: 
+      objectReference: {fileID: 1260507459023750, guid: 771a7d6779c0b4c42a3097c7a25d3ebc,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a276a7a2b69524703a22ca610d88cbaf, type: 2}
   m_IsPrefabAsset: 0

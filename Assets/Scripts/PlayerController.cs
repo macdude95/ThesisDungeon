@@ -8,6 +8,15 @@ public class PlayerController : MonoBehaviour {
     public float projectileSpeed = 7f;
     public float fireRate = 4f;
     public GameObject ProjectilePrefab;
+    public GameObject HeartsPrefab;
+    public int maxHealth;
+    private int health
+    {
+        get {
+            return hearts.numberOfHearts;
+        }
+    }
+    private HeartsController hearts;
     private Rigidbody2D rigidBody;
     private HashSet<ProjectileController> projectileSet;
     private bool allowFire = true;
@@ -16,6 +25,10 @@ public class PlayerController : MonoBehaviour {
     {
         rigidBody = GetComponent<Rigidbody2D>();
         projectileSet = new HashSet<ProjectileController>();
+
+        GameObject heartsGameObject = Instantiate(HeartsPrefab, gameObject.transform.parent);
+        hearts = heartsGameObject.GetComponent<HeartsController>();
+        hearts.SetupHearts(this);
     }
 
     private void FixedUpdate() 
@@ -29,10 +42,24 @@ public class PlayerController : MonoBehaviour {
         fireVelocity.Scale(new Vector2(projectileSpeed, projectileSpeed));
         if (fireVelocity.magnitude > 0 && allowFire) 
         {
-            // TODO: Limit Fire Rate using the "fireRate" variable
             StartCoroutine(FireProjectile(fireVelocity));
         }
 
+    }
+
+    public void MoveToPositionInNewRoom(Vector3Int position)
+    {
+        transform.position = position;
+        foreach (ProjectileController projectile in projectileSet)
+        {
+            projectile.gameObject.SetActive(false);
+        }
+    }
+
+    public void die()
+    {
+        GameObject.FindWithTag("GameController").GetComponent<GameController>().reloadLevel();
+        print("You died!");
     }
 
     private IEnumerator FireProjectile(Vector2 fireVelocity)
@@ -60,5 +87,14 @@ public class PlayerController : MonoBehaviour {
         return newProjectileController;
     }
 
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Enemy")
+        {
+            // TODO: Possibly add force so the player gets knocked back?
+            hearts.SubtractHeart();
+        }
+    }
 
 }

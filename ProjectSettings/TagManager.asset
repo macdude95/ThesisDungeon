@@ -9,6 +9,8 @@ TagManager:
   - UpStairs
   - DownStairs
   - Projectile
+  - Hearts
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -60,4 +62,7 @@ TagManager:
     locked: 0
   - name: Player
     uniqueID: 2091142599
+    locked: 0
+  - name: UI
+    uniqueID: 3922831781
     locked: 0

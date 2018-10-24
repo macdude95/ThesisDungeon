@@ -1,20 +1,24 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 
 public class GameController : MonoBehaviour
 {
     public GameObject roomPrefab;
-    private RoomController[,,] roomControllers;
     public GameObject player;
     public Level currentLevel;
-    private Vector3Int currentRoomLocation;
-    public RoomController currentRoomController {
-        get {
+    public RoomController currentRoomController
+    {
+        get
+        {
             return roomControllers[currentRoomLocation.x, currentRoomLocation.y, currentRoomLocation.z];
         }
     }
+    public int numberOfHeartsAtStart = 3;
+    private RoomController[,,] roomControllers;
+    private Vector3Int currentRoomLocation;
 
     private void Awake()
     {
@@ -41,6 +45,12 @@ public class GameController : MonoBehaviour
     private void exitLevel()
     {
         print("Level Complete!");
+        reloadLevel();
+    }
+
+    public void reloadLevel()
+    {
+        SceneManager.LoadScene("SampleScene");
     }
 
     private void Start()
@@ -54,7 +64,7 @@ public class GameController : MonoBehaviour
     private void PutPlayerInRoomAtPosition(RoomController roomController, Vector3Int position) 
     {
         roomController.gameObject.SetActive(true);
-        player.transform.position = position;
+        player.GetComponent<PlayerController>().MoveToPositionInNewRoom(position);
         resetAStarPathingSystem();
     }
 
