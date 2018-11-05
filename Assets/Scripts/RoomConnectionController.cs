@@ -44,7 +44,7 @@ public class RoomConnectionController : MonoBehaviour {
     {
         if (collision.tag == "Player")
         {
-            GameObject.FindWithTag("GameController").GetComponent<GameController>().enterRoomConnection(roomConnection);
+            GameObject.FindWithTag("GameController").GetComponent<GameController>().levelController.enterRoomConnection(roomConnection);
         }
     }
 }

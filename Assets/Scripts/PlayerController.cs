@@ -58,7 +58,7 @@ public class PlayerController : MonoBehaviour {
 
     public void die()
     {
-        GameObject.FindWithTag("GameController").GetComponent<GameController>().reloadLevel();
+        GameObject.FindWithTag("GameController").GetComponent<GameController>().loadNewLevel();
         print("You died!");
     }
 

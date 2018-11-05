@@ -394,9 +394,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ad043c679f8b42aeb835dbc4363c5db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roomPrefab: {fileID: 1309703722579688, guid: c75eeb78e9d4040379d408dbd4d85c22, type: 2}
+  levelControllerPrefab: {fileID: 1558293702112182, guid: 0293b4299051d4e83862e4a4da8c7d8f,
+    type: 2}
+  levelController: {fileID: 0}
   player: {fileID: 425504182}
   numberOfHeartsAtStart: 3
+  sceneIsLevel: 1
 --- !u!1 &1405838807
 GameObject:
   m_ObjectHideFlags: 0

@@ -80,3 +80,4 @@ MonoBehaviour:
   upstairsSprite: {fileID: 21300010, guid: 3198fb5d7bfb742ee98c50b1f6a9f045, type: 3}
   downstairsSprite: {fileID: 21300008, guid: 3198fb5d7bfb742ee98c50b1f6a9f045, type: 3}
   levelExitSprite: {fileID: 21300014, guid: 3198fb5d7bfb742ee98c50b1f6a9f045, type: 3}
+  roomConnection: 6
