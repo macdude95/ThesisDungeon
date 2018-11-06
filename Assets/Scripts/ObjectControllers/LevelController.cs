@@ -9,7 +9,7 @@ public class LevelController : MonoBehaviour
     [HideInInspector]
     public GameObject player;
     [HideInInspector]
-    public Level currentLevel;
+    public Level level;
     public RoomController currentRoomController
     {
         get
@@ -29,16 +29,17 @@ public class LevelController : MonoBehaviour
     private void GenerateLevel()
     {
         // initialization
-        currentLevel = new Level();
+        level = new Level();
         createRooms();
     }
 
     public void StartLevel()
     {
         // start player in entrance room
-        currentRoomLocation = currentLevel.entranceRoomLocation;
+        currentRoomLocation = level.entranceRoomLocation;
         Vector3Int entrancePosition = currentRoomController.room.PositionOfRoomConnection(RoomConnection.North) + Vector3Int.down;
         PutPlayerInRoomAtPosition(currentRoomController, entrancePosition);
+        GameObject.FindWithTag("Stats").GetComponent<StatsController>().StartNewLevel(level);
     }
 
     public void enterRoomConnection(RoomConnection roomConnection)
@@ -60,6 +61,7 @@ public class LevelController : MonoBehaviour
     {
         print("Level Complete!");
         GameObject.FindWithTag("GameController").GetComponent<GameController>().loadInBetweenLevel();
+        GameObject.FindWithTag("Stats").GetComponent<StatsController>().FinishLevel();
     }
 
     private void PutPlayerInRoomAtPosition(RoomController roomController, Vector3Int position)
@@ -80,17 +82,17 @@ public class LevelController : MonoBehaviour
 
     private void createRooms()
     {
-        roomControllers = new RoomController[currentLevel.width, currentLevel.length, currentLevel.height];
-        for (int x = 0; x < currentLevel.width; x++)
+        roomControllers = new RoomController[level.width, level.length, level.height];
+        for (int x = 0; x < level.width; x++)
         {
-            for (int y = 0; y < currentLevel.length; y++)
+            for (int y = 0; y < level.length; y++)
             {
-                for (int z = 0; z < currentLevel.height; z++)
+                for (int z = 0; z < level.height; z++)
                 {
                     GameObject roomObject = Instantiate(roomPrefab);
                     roomObject.SetActive(false);
                     roomControllers[x, y, z] = roomObject.GetComponent<RoomController>();
-                    roomControllers[x, y, z].SetupRoom(currentLevel.rooms[x, y, z]);
+                    roomControllers[x, y, z].SetupRoom(level.rooms[x, y, z]);
                 }
             }
         }

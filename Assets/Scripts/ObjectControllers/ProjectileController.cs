@@ -5,6 +5,7 @@ using UnityEngine;
 public class ProjectileController : MonoBehaviour {
 
     private Rigidbody2D rb;
+    public int damage = 30;
 
     private void Awake()
     {

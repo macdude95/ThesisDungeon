@@ -87,13 +87,17 @@ public class PlayerController : MonoBehaviour {
         return newProjectileController;
     }
 
+    private void takeDamage() {
+        hearts.SubtractHeart();
+        GameObject.FindWithTag("Stats").GetComponent<StatsController>().PlayerTakesDamage();
+    }
+
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.tag == "Enemy")
         {
-            // TODO: Possibly add force so the player gets knocked back?
-            hearts.SubtractHeart();
+            takeDamage();
         }
     }
 

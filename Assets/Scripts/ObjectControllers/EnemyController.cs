@@ -21,13 +21,14 @@ public class EnemyController : MonoBehaviour {
 
     private void die() {
         gameObject.SetActive(false);
+        GameObject.FindWithTag("Stats").GetComponent<StatsController>().PlayerKillsEnemy();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.tag == "Projectile")
         {
-            health -= 30;
+            health -= collision.gameObject.GetComponent<ProjectileController>().damage;
         }
     }
 }
