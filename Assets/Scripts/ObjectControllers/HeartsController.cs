@@ -1,49 +1,43 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HeartsController : MonoBehaviour {
 
     public Sprite emptyHeartSprite;
     public Sprite fullHeartSprite;
-    private List<SpriteRenderer> spriteRenderers;
-    [HideInInspector]
-    public int numberOfHearts;
-    private PlayerController player;
+    private int maxHealth;
+    private List<Image> heartImages;
+    private float heartSize = 70;
 
-    private void Awake()
+    public void SetupHearts(int maxHealth)
     {
-        spriteRenderers = new List<SpriteRenderer>();
-    }
-
-    public void SetupHearts(PlayerController player)
-    {
-        this.player = player;
-        this.numberOfHearts = player.maxHealth;
-        for (int i = 0; i < player.maxHealth; i++)
+        heartImages = new List<Image>();
+        for (int i = 0; i < maxHealth; i++)
         {
             GameObject childGameObject = new GameObject("Heart");
             childGameObject.transform.parent = gameObject.transform;
-            childGameObject.transform.position = new Vector3(-3,9,0) + new Vector3(i*1.5f, 0,0);
-            SpriteRenderer spriteRenderer = childGameObject.AddComponent<SpriteRenderer>();
-            spriteRenderer.sortingLayerName = "UI";
-            spriteRenderer.sprite = fullHeartSprite;
-            spriteRenderers.Add(spriteRenderer);
+            Image heartImage = childGameObject.AddComponent<Image>();
+            RectTransform rectTransform = childGameObject.GetComponent<RectTransform>();
+            RectTransform parentRectTransform = gameObject.GetComponent<RectTransform>();
+            rectTransform.SetPositionAndRotation(new Vector3(i * heartSize*0.8f + heartSize/2, parentRectTransform.position.y, parentRectTransform.position.z), Quaternion.identity);
+            rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, heartSize);
+            rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, heartSize);
+            heartImage.sprite = fullHeartSprite;
+            heartImages.Add(heartImage);
         }
     }
 
-    public void AddHeart() {
-        numberOfHearts++;
-        spriteRenderers[numberOfHearts - 1].sprite = fullHeartSprite;
-    }
-
-    public void SubtractHeart()
-    {
-        spriteRenderers[numberOfHearts - 1].sprite = emptyHeartSprite;
-        numberOfHearts--;
-        if (numberOfHearts == 0)
-        {
-            player.die();
+    public void SetNumberOfHearts(int health, int maxHealth) {
+        for (int i = 0; i < maxHealth; i++) {
+            if (i >= health) {
+                heartImages[i].sprite = emptyHeartSprite;
+            } 
+            else
+            {
+                heartImages[i].sprite = fullHeartSprite;
+            }
         }
     }
 }

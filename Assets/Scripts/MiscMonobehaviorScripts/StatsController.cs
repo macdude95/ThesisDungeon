@@ -33,7 +33,6 @@ public class StatsController : MonoBehaviour {
     public List<LevelStats> levelsStats;
 
 	void Awake () {
-        DontDestroyOnLoad(this.gameObject);
         levelsStats = new List<LevelStats>();
 	}
 	

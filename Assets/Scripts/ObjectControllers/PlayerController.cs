@@ -8,15 +8,22 @@ public class PlayerController : MonoBehaviour {
     public float projectileSpeed = 7f;
     public float fireRate = 4f;
     public GameObject ProjectilePrefab;
-    public GameObject HeartsPrefab;
-    public int maxHealth;
+    public int maxHealth = 3;
+    public HeartsController heartsController;
+    private int _health;
     private int health
     {
         get {
-            return hearts.numberOfHearts;
+            return _health;
+        }
+        set {
+            _health = value;
+            heartsController.SetNumberOfHearts(_health, maxHealth);
+            if (_health == 0) {
+                die();
+            }
         }
     }
-    private HeartsController hearts;
     private Rigidbody2D rigidBody;
     private HashSet<ProjectileController> projectileSet;
     private bool allowFire = true;
@@ -25,10 +32,8 @@ public class PlayerController : MonoBehaviour {
     {
         rigidBody = GetComponent<Rigidbody2D>();
         projectileSet = new HashSet<ProjectileController>();
-
-        GameObject heartsGameObject = Instantiate(HeartsPrefab, gameObject.transform.parent);
-        hearts = heartsGameObject.GetComponent<HeartsController>();
-        hearts.SetupHearts(this);
+        heartsController.SetupHearts(maxHealth);
+        health = maxHealth;
     }
 
     private void FixedUpdate() 
@@ -56,9 +61,9 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
-    public void die()
+    private void die()
     {
-        GameObject.FindWithTag("GameController").GetComponent<GameController>().loadNewLevel();
+        FindObjectOfType<GameController>().loadNewLevel();
         print("You died!");
     }
 
@@ -88,8 +93,8 @@ public class PlayerController : MonoBehaviour {
     }
 
     private void takeDamage() {
-        hearts.SubtractHeart();
-        GameObject.FindWithTag("Stats").GetComponent<StatsController>().PlayerTakesDamage();
+        health--;
+        FindObjectOfType<StatsController>().PlayerTakesDamage();
     }
 
 

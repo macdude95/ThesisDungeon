@@ -11,7 +11,7 @@ TagManager:
   - Projectile
   - Hearts
   - Enemy
-  - Stats
+  - Pearl
   layers:
   - Default
   - TransparentFX

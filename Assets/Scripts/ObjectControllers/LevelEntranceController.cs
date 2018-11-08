@@ -8,7 +8,7 @@ public class LevelEntranceController : MonoBehaviour {
     {
         if (collision.tag == "Player")
         {
-            GameObject.FindWithTag("GameController").GetComponent<GameController>().loadNewLevel();
+            FindObjectOfType<GameController>().loadNewLevel();
         }
     }
 }

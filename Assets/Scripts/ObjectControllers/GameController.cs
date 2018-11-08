@@ -7,9 +7,9 @@ using UnityEngine.Tilemaps;
 public class GameController : MonoBehaviour
 {
     public GameObject levelControllerPrefab;
+    [HideInInspector]
     public LevelController levelController;
     public GameObject player;
-    public int numberOfHeartsAtStart = 3;
     public bool sceneIsLevel = false;
     public Vector3 centerOfScreen {
         get {

@@ -17,7 +17,6 @@ public class LevelController : MonoBehaviour
             return roomControllers[currentRoomLocation.x, currentRoomLocation.y, currentRoomLocation.z];
         }
     }
-    public int numberOfHeartsAtStart = 3;
     private RoomController[,,] roomControllers;
     private Vector3Int currentRoomLocation;
 
@@ -39,7 +38,7 @@ public class LevelController : MonoBehaviour
         currentRoomLocation = level.entranceRoomLocation;
         Vector3Int entrancePosition = currentRoomController.room.PositionOfRoomConnection(RoomConnection.North) + Vector3Int.down;
         PutPlayerInRoomAtPosition(currentRoomController, entrancePosition);
-        GameObject.FindWithTag("Stats").GetComponent<StatsController>().StartNewLevel(level);
+        FindObjectOfType<StatsController>().StartNewLevel(level);
     }
 
     public void enterRoomConnection(RoomConnection roomConnection)
@@ -60,8 +59,8 @@ public class LevelController : MonoBehaviour
     private void exitLevel()
     {
         print("Level Complete!");
-        GameObject.FindWithTag("GameController").GetComponent<GameController>().loadInBetweenLevel();
-        GameObject.FindWithTag("Stats").GetComponent<StatsController>().FinishLevel();
+        FindObjectOfType<GameController>().loadInBetweenLevel();
+        FindObjectOfType<StatsController>().FinishLevel();
     }
 
     private void PutPlayerInRoomAtPosition(RoomController roomController, Vector3Int position)
