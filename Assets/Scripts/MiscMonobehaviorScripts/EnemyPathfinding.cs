@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Pathfinding;
 
-[RequireComponent (typeof (Rigidbody2D))]
+[RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Seeker))]
 public class EnemyPathfinding : MonoBehaviour {
 
@@ -30,37 +30,30 @@ public class EnemyPathfinding : MonoBehaviour {
     // The waypoint we are currently moving towards
     private int currentWaypoint = 0;
 
-    private void Awake()
-    {
+    private void Awake() {
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
         findPlayer();
     }
 
-    private void OnEnable()
-    {
+    private void OnEnable() {
         //findPlayer();
         StartCoroutine(UpdatePath());
     }
 
 
 
-    public void findPlayer()
-    {
+    public void findPlayer() {
         GameObject playerObject = GameObject.FindWithTag("Player");
-        if (playerObject == null)
-        {
+        if (playerObject == null) {
             Debug.LogError("Player not found in scene.");
             return;
-        }
-        else
-        {
+        } else {
             target = playerObject.transform;
         }
     }
 
-    private void Start()
-    {
+    private void Start() {
         // Start a new path to the target position and return the result to the OnPathCOmplete method
         seeker.StartPath(transform.position, target.position, OnPathComplete);
 
@@ -83,8 +76,7 @@ public class EnemyPathfinding : MonoBehaviour {
         }
     }
 
-    private void FixedUpdate()
-    {
+    private void FixedUpdate() {
         if (path == null) {
             return;
         }

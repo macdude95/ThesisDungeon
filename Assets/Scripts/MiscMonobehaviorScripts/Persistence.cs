@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class Persistence : MonoBehaviour {
 
-	void Start ()
-    {
+    void Start() {
         DontDestroyOnLoad(this.gameObject);
     }
 }

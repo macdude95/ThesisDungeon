@@ -10,11 +10,9 @@ public class RoomConnectionController : MonoBehaviour {
     private RoomConnection roomConnection;
     private SpriteRenderer spriteRenderer;
 
-    public void SetRoomConnection(RoomConnection roomConnection, bool? stairsFacingLeft)
-    {
+    public void SetRoomConnection(RoomConnection roomConnection, bool? stairsFacingLeft) {
         this.roomConnection = roomConnection;
-        switch(roomConnection)
-        {
+        switch (roomConnection) {
             case RoomConnection.Up:
             case RoomConnection.Down:
             case RoomConnection.NextLevel:
@@ -22,8 +20,7 @@ public class RoomConnectionController : MonoBehaviour {
                 spriteRenderer.sortingLayerName = "Items";
                 break;
         }
-        switch(roomConnection)
-        {
+        switch (roomConnection) {
             case RoomConnection.Up:
                 spriteRenderer.sprite = upstairsSprite;
                 spriteRenderer.flipX = !stairsFacingLeft.Value;
@@ -40,10 +37,8 @@ public class RoomConnectionController : MonoBehaviour {
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.tag == "Player")
-        {
+    private void OnTriggerEnter2D(Collider2D collision) {
+        if (collision.tag == "Player") {
             FindObjectOfType<GameController>().levelController.enterRoomConnection(roomConnection);
         }
     }

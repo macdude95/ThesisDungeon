@@ -11,8 +11,7 @@ using System.Linq;
  * 
  */
 
-public class Level
-{
+public class Level {
     public int width;
     public int length;
     public int height;
@@ -20,24 +19,21 @@ public class Level
     public Vector3Int entranceRoomLocation;
     public Room[,,] rooms;
 
-    private class RoomBuilder
-    {
+    private class RoomBuilder {
         public HashSet<RoomConnection> roomConnections;
         public bool isOnCriticalPath;
         public Room room;
         public readonly bool isEntrance;
         public readonly Vector3Int location;
 
-        public RoomBuilder(int x, int y, int z, bool isOnCriticalPath, bool isEntrance = false) 
-        {
+        public RoomBuilder(int x, int y, int z, bool isOnCriticalPath, bool isEntrance = false) {
             this.isOnCriticalPath = isOnCriticalPath;
             this.roomConnections = new HashSet<RoomConnection>();
             this.isEntrance = isEntrance;
             this.location = new Vector3Int(x, y, z);
         }
 
-        public Room BuildRoom(Level level, int width = 15, int length = 9, float density = 0.15f)
-        {
+        public Room BuildRoom(Level level, int width = 15, int length = 9, float density = 0.15f) {
             RoomConnection[] roomConnectionsArray = new RoomConnection[roomConnections.Count];
             roomConnections.CopyTo(roomConnectionsArray);
             this.room = new Room(level, location, width, length, density, roomConnections.ToList(), isEntrance);
@@ -45,8 +41,7 @@ public class Level
         }
     }
 
-    public Level(int width = 3, int length = 3, int height = 3)
-    {
+    public Level(int width = 3, int length = 3, int height = 3) {
         this.width = width;
         this.length = length;
         this.height = height;
@@ -57,11 +52,9 @@ public class Level
         this.buildRooms();
     }
 
-    public static Vector3Int getNextRoomLocation(Room currentRoom, RoomConnection roomConnection) 
-    {
+    public static Vector3Int getNextRoomLocation(Room currentRoom, RoomConnection roomConnection) {
         Vector3Int currentLocation = currentRoom.location;
-        switch (roomConnection)
-        {
+        switch (roomConnection) {
             case RoomConnection.North:
                 currentLocation.y++;
                 break;
@@ -84,28 +77,23 @@ public class Level
         return currentLocation;
     }
 
-    private void buildRooms()
-    {
-        for (int z = height - 1; z >= 0; z--)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                for (int y = 0; y < length; y++)
-                {
+    private void buildRooms() {
+        for (int z = height - 1; z >= 0; z--) {
+            for (int x = 0; x < width; x++) {
+                for (int y = 0; y < length; y++) {
                     rooms[x, y, z] = roomBuilders[x, y, z].BuildRoom(this);
                 }
             }
         }
     }
 
-    private void createCriticalPath()
-    {
+    private void createCriticalPath() {
         // Create entrance room
         int x = Random.Range(0, width);
         int y = Random.Range(0, length);
         int z = height - 1; // NOTE: z is the vertical axis
         entranceRoomLocation = new Vector3Int(x, y, z);
-        RoomBuilder entranceRoomBuilder = new RoomBuilder(x,y,z,true, true);
+        RoomBuilder entranceRoomBuilder = new RoomBuilder(x, y, z, true, true);
         roomBuilders[x, y, z] = entranceRoomBuilder;
 
         RoomBuilder currentRoomBuilder = entranceRoomBuilder;
@@ -114,15 +102,14 @@ public class Level
             // randomly move north, south, east, west, or down
             List<RoomConnection> possilbeConnections = new List<RoomConnection>();
             // first condition makes sure we don't go outside of dimensions, and second makes sure we don't go back to the critical path
-            if (x > 0 && roomBuilders[x-1,y,z] == null) { possilbeConnections.Add(RoomConnection.West); }
-            if (y > 0 && roomBuilders[x, y-1, z] == null) { possilbeConnections.Add(RoomConnection.South); }
-            if (x < width - 1 && roomBuilders[x+1, y, z] == null) { possilbeConnections.Add(RoomConnection.East); }
-            if (y < length - 1 && roomBuilders[x, y+1, z] == null) { possilbeConnections.Add(RoomConnection.North); }
+            if (x > 0 && roomBuilders[x - 1, y, z] == null) { possilbeConnections.Add(RoomConnection.West); }
+            if (y > 0 && roomBuilders[x, y - 1, z] == null) { possilbeConnections.Add(RoomConnection.South); }
+            if (x < width - 1 && roomBuilders[x + 1, y, z] == null) { possilbeConnections.Add(RoomConnection.East); }
+            if (y < length - 1 && roomBuilders[x, y + 1, z] == null) { possilbeConnections.Add(RoomConnection.North); }
             if (!currentRoomBuilder.roomConnections.Contains(RoomConnection.Up) && currentRoomBuilder != entranceRoomBuilder) { possilbeConnections.Add(RoomConnection.Down); }
             RoomConnection randomRoomConnection = possilbeConnections[Random.Range(0, possilbeConnections.Count)];
             // adjust x, y, or z value
-            switch (randomRoomConnection)
-            {
+            switch (randomRoomConnection) {
                 case RoomConnection.North:
                     y++;
                     break;
@@ -144,7 +131,7 @@ public class Level
             if (z < 0) { break; }
 
             currentRoomBuilder.roomConnections.Add(randomRoomConnection);
-            RoomBuilder nextRoom = new RoomBuilder(x,y,z, true);
+            RoomBuilder nextRoom = new RoomBuilder(x, y, z, true);
             roomBuilders[x, y, z] = nextRoom;
             nextRoom.roomConnections.Add(Room.oppositeOfRoomConnection(randomRoomConnection));
 
@@ -155,33 +142,24 @@ public class Level
         currentRoomBuilder.roomConnections.Add(RoomConnection.NextLevel);
     }
 
-    private void addMoreRooms()
-    {
+    private void addMoreRooms() {
         // fill in all the blanks in the "rooms"
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < length; y++)
-            {
-                for (int z = 0; z < height; z++)
-                {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < length; y++) {
+                for (int z = 0; z < height; z++) {
                     RoomBuilder roomBuilder = roomBuilders[x, y, z];
-                    if (roomBuilder == null)
-                    {
-                        roomBuilder = new RoomBuilder(x,y,z,false);
+                    if (roomBuilder == null) {
+                        roomBuilder = new RoomBuilder(x, y, z, false);
                         roomBuilders[x, y, z] = roomBuilder;
                     }
 
-                    if (roomBuilder.isOnCriticalPath)
-                    {
+                    if (roomBuilder.isOnCriticalPath) {
                         roomBuilder.roomConnections.UnionWith(getPossilbeConnectionsAtPositionOnThisFloor(x, y));
-                    }
-                    else
-                    {
+                    } else {
                         List<RoomConnection> possibleRoomConnections = getPossilbeConnectionsAtPositionOnThisFloor(x, y);
                         possibleRoomConnections.Shuffle();
                         int numberOfConnections = Random.Range(0, possibleRoomConnections.Count);
-                        for (int i = 0; i < numberOfConnections; i++)
-                        {
+                        for (int i = 0; i < numberOfConnections; i++) {
                             roomBuilder.roomConnections.Add(possibleRoomConnections[i]);
                         }
                     }
@@ -191,29 +169,23 @@ public class Level
 
         // clean up. If room 1 connects to room 2 but not vice versa, remove that room connection
 
-        for (int z = 0; z < height; z++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                for (int y = 0; y < length; y++)
-                {
+        for (int z = 0; z < height; z++) {
+            for (int x = 0; x < width; x++) {
+                for (int y = 0; y < length; y++) {
                     RoomBuilder currentRoom = roomBuilders[x, y, z];
                     // check adjacent rooms in x, y, and z dimensions in the positive direction
                     RoomBuilder eastRoom = x + 1 < width ? roomBuilders[x + 1, y, z] : null;
                     RoomBuilder northRoom = y + 1 < length ? roomBuilders[x, y + 1, z] : null;
-                    if (eastRoom != null)
-                    {
+                    if (eastRoom != null) {
                         if ((currentRoom.roomConnections.Contains(RoomConnection.East) && !eastRoom.roomConnections.Contains(RoomConnection.West))
-                            || (!currentRoom.roomConnections.Contains(RoomConnection.East) && eastRoom.roomConnections.Contains(RoomConnection.West)))
-                        {
+                            || (!currentRoom.roomConnections.Contains(RoomConnection.East) && eastRoom.roomConnections.Contains(RoomConnection.West))) {
                             currentRoom.roomConnections.Remove(RoomConnection.East);
                             eastRoom.roomConnections.Remove(RoomConnection.West);
                         }
                     }
                     if (northRoom != null) {
                         if ((currentRoom.roomConnections.Contains(RoomConnection.North) && !northRoom.roomConnections.Contains(RoomConnection.South))
-                            || (!currentRoom.roomConnections.Contains(RoomConnection.North) && northRoom.roomConnections.Contains(RoomConnection.South)))
-                        {
+                            || (!currentRoom.roomConnections.Contains(RoomConnection.North) && northRoom.roomConnections.Contains(RoomConnection.South))) {
                             currentRoom.roomConnections.Remove(RoomConnection.North);
                             northRoom.roomConnections.Remove(RoomConnection.South);
                         }
@@ -223,8 +195,7 @@ public class Level
         }
     }
 
-    private List<RoomConnection> getPossilbeConnectionsAtPositionOnThisFloor(int x, int y) 
-    {
+    private List<RoomConnection> getPossilbeConnectionsAtPositionOnThisFloor(int x, int y) {
         List<RoomConnection> possibleRoomConnections = new List<RoomConnection>();
         if (x > 0) { possibleRoomConnections.Add(RoomConnection.West); }
         if (y > 0) { possibleRoomConnections.Add(RoomConnection.South); }
@@ -232,24 +203,19 @@ public class Level
         if (y < length - 1) { possibleRoomConnections.Add(RoomConnection.North); }
         return possibleRoomConnections;
     }
-    
-    public void printLevel()
-    {
-        for (int z = height - 1; z >= 0; z--)
-        {
+
+    public void printLevel() {
+        for (int z = height - 1; z >= 0; z--) {
             Debug.Log("Floor: " + z);
-            for (int y = 0; y < length; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
+            for (int y = 0; y < length; y++) {
+                for (int x = 0; x < width; x++) {
                     Level.RoomBuilder roomBuilder = roomBuilders[x, y, z];
                     Debug.Log("Room at " + x + ", " + y + ", " + z + ". Critical path? " + roomBuilder.isOnCriticalPath);
-                    if (roomBuilder.isEntrance) { 
+                    if (roomBuilder.isEntrance) {
                         Debug.Log(" this is the entrance");
                     }
                     string roomConnections = "";
-                    foreach (RoomConnection rc in roomBuilder.roomConnections)
-                    {
+                    foreach (RoomConnection rc in roomBuilder.roomConnections) {
                         roomConnections += rc + ", ";
                     }
                     Debug.Log(roomConnections);

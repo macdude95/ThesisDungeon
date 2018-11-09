@@ -9,36 +9,32 @@ public class DialogueController : MonoBehaviour {
     public Text textBox;
     public Image dialogueBox;
     private int stepInDialogue = 0;
-    private NarrativeChunk[] sectionOfNarrative;
-    private void Start()
-    {
+    private DialogueChunk[] sectionOfNarrative;
+    private void Start() {
         sectionOfNarrative = FindObjectOfType<NarrativeController>().GetNextDialogueSequence();
-        if (sectionOfNarrative.Length > 0) { 
+        if (sectionOfNarrative.Length > 0) {
             dialogueBox.gameObject.SetActive(true);
             SetNewTextAndPerformAction();
-        }
-        else { dialogueBox.gameObject.SetActive(false); }
+        } else { dialogueBox.gameObject.SetActive(false); }
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            if (stepInDialogue >= sectionOfNarrative.Length)
-            {
+    private void Update() {
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            if (stepInDialogue >= sectionOfNarrative.Length) {
                 dialogueBox.gameObject.SetActive(false);
-            }
-            else
-            {
+            } else {
                 SetNewTextAndPerformAction();
             }
         }
     }
 
-    private void SetNewTextAndPerformAction()
-    {
-
+    private void SetNewTextAndPerformAction() {
         textBox.text = sectionOfNarrative[stepInDialogue].dialogueSegment;
+        if (textBox.text == "") {
+            dialogueBox.gameObject.SetActive(false);
+        } else {
+            dialogueBox.gameObject.SetActive(true);
+        }
         sectionOfNarrative[stepInDialogue].PerformAction();
         stepInDialogue++;
     }

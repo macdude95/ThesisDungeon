@@ -6,8 +6,7 @@ using ExtensionMethods;
 
 public enum RoomConnection { North, South, East, West, Up, Down, NextLevel }
 
-public class Room
-{
+public class Room {
     public readonly Vector3Int location;
     public readonly int width;
     public readonly int length;
@@ -23,8 +22,7 @@ public class Room
     }
     public bool? stairsFacingLeft;
     private List<Vector3Int> listOfEntrancePositoins {
-        get
-        {
+        get {
             List<Vector3Int> list = new List<Vector3Int>();
             foreach (RoomConnection roomConnection in roomConnections) {
                 list.Add(EntrancePositionOfRoomConnection(roomConnection));
@@ -34,10 +32,8 @@ public class Room
     }
     private Level level;
 
-    public Room(Level level, Vector3Int location, int width, int length, float density, List<RoomConnection> roomConnections, bool isEntrance = false, int numberOfEnemies = 1)
-    {
-        if (width <= 0 || length <= 0 || density < 0 || density > 1)
-        {
+    public Room(Level level, Vector3Int location, int width, int length, float density, List<RoomConnection> roomConnections, bool isEntrance = false, int numberOfEnemies = 1) {
+        if (width <= 0 || length <= 0 || density < 0 || density > 1) {
             throw new System.ArgumentOutOfRangeException();
         }
 
@@ -55,12 +51,10 @@ public class Room
         placeEnemies();
     }
 
-    public Vector3Int EntrancePositionOfRoomConnection(RoomConnection roomConnection)
-    {
+    public Vector3Int EntrancePositionOfRoomConnection(RoomConnection roomConnection) {
         Vector3Int roomConnectionPosition = PositionOfRoomConnection(roomConnection);
         Vector3Int offset = Vector3Int.zero;
-        switch (roomConnection)
-        {
+        switch (roomConnection) {
             case RoomConnection.North:
                 offset = Vector3Int.down;
                 break;
@@ -84,25 +78,19 @@ public class Room
         return roomConnectionPosition + offset;
     }
 
-    private void placeEnemies()
-    {
+    private void placeEnemies() {
         List<Vector2Int> emptySpots = new List<Vector2Int>();
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < length; y++)
-            {
-                if(grid[x,y].type == TileType.Ground)
-                {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < length; y++) {
+                if (grid[x, y].type == TileType.Ground) {
                     emptySpots.Add(new Vector2Int(x, y));
                 }
             }
         }
 
         emptySpots.Shuffle();
-        for (int i = 0; i < numberOfEnemies; i++)
-        {
-            if (i >= emptySpots.Count)
-            {
+        for (int i = 0; i < numberOfEnemies; i++) {
+            if (i >= emptySpots.Count) {
                 Debug.LogError("You can't have " + numberOfEnemies + " enemies in a room with only " + emptySpots.Count + " empty spots.");
             }
             Vector2Int spot = emptySpots[i];
@@ -110,10 +98,8 @@ public class Room
         }
     }
 
-    private void setupWalls()
-    {
-        if (isEntrance)
-        {
+    private void setupWalls() {
+        if (isEntrance) {
             placeExteriorWallsAndInitializeGrid();
             placeStairWalls();
             return;
@@ -121,8 +107,7 @@ public class Room
 
         // Create rooms until a valid one is complete
         bool allPathsArePossible = true;
-        do
-        {
+        do {
             placeExteriorWallsAndInitializeGrid();
             placeStairWalls();
             placeInteriorWalls();
@@ -132,8 +117,7 @@ public class Room
 
             // Check to make sure all paths are possible
             RoomConnection connection = roomConnections[0]; // if all can connect to this connection, then they can all connect to each other
-            foreach (RoomConnection otherConnection in roomConnections)
-            {
+            foreach (RoomConnection otherConnection in roomConnections) {
                 if (connection == otherConnection) { continue; }
 
                 LinkedList<Tile> path = aStar.Search(PositionOfRoomConnection(connection), PositionOfRoomConnection(otherConnection), null);
@@ -143,13 +127,11 @@ public class Room
         } while (!allPathsArePossible);
     }
 
-    private void placeStairWalls()
-    {
+    private void placeStairWalls() {
         if (!hasStairs()) { return; }
         Vector3Int center = PositionOfCenter();
         grid[center.x, center.y].type = roomConnections.Contains(RoomConnection.Up) ? TileType.Upstairs : TileType.Downstairs;
-        for (int i = -1; i <= 1; i++)
-        {
+        for (int i = -1; i <= 1; i++) {
             grid[center.x + i, center.y + 1].type = TileType.Wall;
             grid[center.x + i, center.y - 1].type = TileType.Wall;
         }
@@ -164,55 +146,43 @@ public class Room
         return roomConnections.Contains(RoomConnection.Up) || roomConnections.Contains(RoomConnection.Down);
     }
 
-    private void placeExteriorWallsAndInitializeGrid()
-    {
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < length; y++)
-            {
-                if (grid[x,y] == null)
-                {
+    private void placeExteriorWallsAndInitializeGrid() {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < length; y++) {
+                if (grid[x, y] == null) {
                     grid[x, y] = new Tile(TileType.Ground);
-                }
-                else {
+                } else {
                     grid[x, y].type = TileType.Ground;
                 }
                 bool isOnEdge = x == width - 1 || x == 0 || y == length - 1 || y == 0;
-                if (isOnEdge)
-                {
+                if (isOnEdge) {
                     grid[x, y].type = TileType.Wall;
                 }
             }
         }
 
-        foreach (RoomConnection connection in roomConnections)
-        {
+        foreach (RoomConnection connection in roomConnections) {
             Vector3Int connectionPosition = PositionOfRoomConnection(connection);
             grid[connectionPosition.x, connectionPosition.y].type = TileType.Ground;
         }
     }
 
-    private void placeInteriorWalls()
-    {
+    private void placeInteriorWalls() {
         int occupiedSpots = 0;
         List<Vector3Int> entrancePositions = listOfEntrancePositoins;
-        while (occupiedSpots < NumberOfInteriorWalls())
-        {
+        while (occupiedSpots < NumberOfInteriorWalls()) {
             int x = Random.Range(1, width - 1);
             int y = Random.Range(1, length - 1);
-            if (grid[x, y].type == TileType.Ground && !listOfEntrancePositoins.Contains(new Vector3Int(x,y,0)))
-            {
+            if (grid[x, y].type == TileType.Ground && !listOfEntrancePositoins.Contains(new Vector3Int(x, y, 0))) {
                 grid[x, y].type = TileType.Wall;
                 occupiedSpots++;
             }
         }
     }
 
-    public Vector3Int PositionOfRoomConnection(RoomConnection roomConnection)
-    {
+    public Vector3Int PositionOfRoomConnection(RoomConnection roomConnection) {
         int x = 0, y = 0;
-        switch (roomConnection)
-        {
+        switch (roomConnection) {
             case RoomConnection.North:
                 x = width / 2;
                 y = length - 1;
@@ -241,36 +211,30 @@ public class Room
         return new Vector3Int(x, y, 0);
     }
 
-    public Vector3Int PositionOfCenter()
-    {
+    public Vector3Int PositionOfCenter() {
         return PositionOfRoomConnection(RoomConnection.Up);
     }
 
-    public int NumberOfExteriorWalls()
-    {
+    public int NumberOfExteriorWalls() {
         int total = width * 2 + length * 2 - 4; // subtract 4 because corners are counted twice
         int numOfExteriorConnections = 0;
         RoomConnection[] exteriorConnections = { RoomConnection.North, RoomConnection.South, RoomConnection.East, RoomConnection.West };
-        foreach (RoomConnection rc in exteriorConnections)
-        {
-            if (roomConnections.Contains(rc))
-            {
+        foreach (RoomConnection rc in exteriorConnections) {
+            if (roomConnections.Contains(rc)) {
                 numOfExteriorConnections += 1;
             }
         }
         return total - numOfExteriorConnections;
     }
 
-    public int NumberOfInteriorWalls()
-    {   int totelNum = (int)((width - 2) * (length - 2) * density);
+    public int NumberOfInteriorWalls() {
+        int totelNum = (int)((width - 2) * (length - 2) * density);
         int numOfUpOrDownWalls = hasStairs() ? 9 : 0;
         return totelNum - numOfUpOrDownWalls;
     }
 
-    public static RoomConnection oppositeOfRoomConnection(RoomConnection roomConnection)
-    {
-        switch (roomConnection)
-        {
+    public static RoomConnection oppositeOfRoomConnection(RoomConnection roomConnection) {
+        switch (roomConnection) {
             case RoomConnection.North:
                 return RoomConnection.South;
             case RoomConnection.South:

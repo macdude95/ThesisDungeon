@@ -25,17 +25,17 @@ public class StatsController : MonoBehaviour {
         }
 
         public override string ToString() {
-            return "Damage Taken: " + damageTaken +" Number of kills: " + numberOfKills + " Time in level: " + timeInLevel;
+            return "Damage Taken: " + damageTaken + " Number of kills: " + numberOfKills + " Time in level: " + timeInLevel;
         }
     }
     private LevelStats currentLevelStats;
 
     public List<LevelStats> levelsStats;
 
-	void Awake () {
+    void Awake() {
         levelsStats = new List<LevelStats>();
-	}
-	
+    }
+
     public void StartNewLevel(Level level) {
         currentLevelStats = new LevelStats(level);
     }

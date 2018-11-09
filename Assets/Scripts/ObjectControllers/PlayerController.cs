@@ -4,15 +4,14 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
 
-	public float walkSpeed = 5f;
+    public float walkSpeed = 5f;
     public float projectileSpeed = 7f;
     public float fireRate = 4f;
     public GameObject ProjectilePrefab;
     public int maxHealth = 3;
     public HeartsController heartsController;
     private int _health;
-    private int health
-    {
+    private int health {
         get {
             return _health;
         }
@@ -20,7 +19,7 @@ public class PlayerController : MonoBehaviour {
             _health = value;
             heartsController.SetNumberOfHearts(_health, maxHealth);
             if (_health == 0) {
-                die();
+                Die();
             }
         }
     }
@@ -28,56 +27,47 @@ public class PlayerController : MonoBehaviour {
     private HashSet<ProjectileController> projectileSet;
     private bool allowFire = true;
 
-    private void Awake()
-    {
+    private void Awake() {
         rigidBody = GetComponent<Rigidbody2D>();
         projectileSet = new HashSet<ProjectileController>();
         heartsController.SetupHearts(maxHealth);
         health = maxHealth;
     }
 
-    private void FixedUpdate() 
-    {
-		rigidBody.velocity = new Vector2(Input.GetAxis("MoveHorizontal") * walkSpeed, Input.GetAxis("MoveVertical") * walkSpeed);
-	}
+    private void FixedUpdate() {
+        rigidBody.velocity = new Vector2(Input.GetAxis("MoveHorizontal") * walkSpeed, Input.GetAxis("MoveVertical") * walkSpeed);
+    }
 
-    private void Update()
-    {
+    private void Update() {
         Vector2 fireVelocity = new Vector2(Input.GetAxis("FireHorizontal"), Input.GetAxis("FireVertical")).normalized;
         fireVelocity.Scale(new Vector2(projectileSpeed, projectileSpeed));
-        if (fireVelocity.magnitude > 0 && allowFire) 
-        {
+        if (fireVelocity.magnitude > 0 && allowFire) {
             StartCoroutine(FireProjectile(fireVelocity));
         }
 
     }
 
-    public void MoveToPositionInNewRoom(Vector3Int position)
-    {
+    public void MoveToPositionInNewRoom(Vector3Int position) {
         transform.position = position;
-        foreach (ProjectileController projectile in projectileSet)
-        {
+        foreach (ProjectileController projectile in projectileSet) {
             projectile.gameObject.SetActive(false);
         }
     }
 
-    private void die()
-    {
+    private void Die() {
         FindObjectOfType<GameController>().loadNewLevel();
         print("You died!");
     }
 
-    private IEnumerator FireProjectile(Vector2 fireVelocity)
-    {
+    private IEnumerator FireProjectile(Vector2 fireVelocity) {
         allowFire = false;
         ProjectileController projectile = getUnusedProjectile();
         projectile.fireWithVelocity(fireVelocity, transform.position);
-        yield return new WaitForSeconds(1f/fireRate);
+        yield return new WaitForSeconds(1f / fireRate);
         allowFire = true;
     }
 
-    private ProjectileController getUnusedProjectile()
-    {
+    private ProjectileController getUnusedProjectile() {
         foreach (ProjectileController projectileController in projectileSet) {
             if (!projectileController.gameObject.activeSelf) {
                 return projectileController;
@@ -98,10 +88,8 @@ public class PlayerController : MonoBehaviour {
     }
 
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.tag == "Enemy")
-        {
+    private void OnCollisionEnter2D(Collision2D collision) {
+        if (collision.gameObject.tag == "Enemy") {
             takeDamage();
         }
     }

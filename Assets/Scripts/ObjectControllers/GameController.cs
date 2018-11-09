@@ -4,8 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 
-public class GameController : MonoBehaviour
-{
+public class GameController : MonoBehaviour {
     public GameObject levelControllerPrefab;
     [HideInInspector]
     public LevelController levelController;
@@ -17,10 +16,8 @@ public class GameController : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        if (sceneIsLevel)
-        {
+    private void Start() {
+        if (sceneIsLevel) {
             GameObject levelControllerObject = Instantiate(levelControllerPrefab);
             levelController = levelControllerObject.GetComponent<LevelController>();
             levelController.player = player;
@@ -29,13 +26,11 @@ public class GameController : MonoBehaviour
         }
     }
 
-    public void loadInBetweenLevel()
-    {
+    public void loadInBetweenLevel() {
         SceneManager.LoadScene("OtherScene");
     }
 
-    public void loadNewLevel()
-    {
+    public void loadNewLevel() {
         SceneManager.LoadScene("LevelScene");
 
     }

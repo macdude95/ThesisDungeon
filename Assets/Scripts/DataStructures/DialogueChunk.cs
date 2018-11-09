@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System;
 
-public class NarrativeChunk
-{
+public class DialogueChunk {
     public string dialogueSegment;
     private Action action;
 
-    public NarrativeChunk(string dialogueSegment, Action action = null) {
+    public DialogueChunk(string dialogueSegment, Action action = null) {
         this.dialogueSegment = dialogueSegment;
         this.action = action;
     }

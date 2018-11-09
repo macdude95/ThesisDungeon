@@ -7,13 +7,11 @@ public class EnemyController : MonoBehaviour {
     public int maxHealth = 100;
     private int health;
 
-    private void Awake()
-    {
+    private void Awake() {
         health = maxHealth;
     }
 
-    private void Update()
-    {
+    private void Update() {
         if (health <= 0) {
             die();
         }
@@ -24,10 +22,8 @@ public class EnemyController : MonoBehaviour {
         FindObjectOfType<StatsController>().PlayerKillsEnemy();
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.tag == "Projectile")
-        {
+    private void OnCollisionEnter2D(Collision2D collision) {
+        if (collision.gameObject.tag == "Projectile") {
             health -= collision.gameObject.GetComponent<ProjectileController>().damage;
         }
     }
