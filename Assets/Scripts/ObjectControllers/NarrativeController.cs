@@ -71,19 +71,19 @@ public class NarrativeController : MonoBehaviour {
             };
         }
     }
-    private Stack<DialogueChunk[]> narrativeQueue;
+    private Queue<DialogueChunk[]> narrativeQueue;
 
     private void Awake() {
-        narrativeQueue = new Stack<DialogueChunk[]>();
-        narrativeQueue.Push(openingDialogue);
-        narrativeQueue.Push(passedTestDialogue);
+        narrativeQueue = new Queue<DialogueChunk[]>();
+        narrativeQueue.Enqueue(openingDialogue);
+        narrativeQueue.Enqueue(passedTestDialogue);
     }
 
     public DialogueChunk[] GetNextDialogueSequence() {
         if (narrativeQueue.Count == 0) {
             return new DialogueChunk[0];
         }
-        return narrativeQueue.Pop();
+        return narrativeQueue.Dequeue();
     }
 
 }
