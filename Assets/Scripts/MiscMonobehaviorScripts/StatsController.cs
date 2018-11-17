@@ -36,22 +36,51 @@ public class StatsController : MonoBehaviour {
         levelsStats = new List<LevelStats>();
     }
 
-    public void StartNewLevel(Level level) {
+    private void UpdateStartNewLevel(Level level) {
         currentLevelStats = new LevelStats(level);
     }
 
-    public void FinishLevel() {
+    private void UpdateFinishLevel() {
         currentLevelStats.StopTime();
         levelsStats.Add(currentLevelStats);
         print(currentLevelStats);
         currentLevelStats = null;
     }
 
-    public void PlayerTakesDamage() {
+    private void UpdatePlayerTakesDamage() {
         currentLevelStats.damageTaken++;
     }
 
-    public void PlayerKillsEnemy() {
+    private void UpdatePlayerKillsEnemy() {
         currentLevelStats.numberOfKills++;
     }
+
+    public static void PlayerKillsEnemy() {
+        StatsController statsController = FindObjectOfType<StatsController>();
+        if (statsController != null) {
+            statsController.UpdatePlayerKillsEnemy();
+        }
+    }
+
+    public static void PlayerTakesDamage() {
+        StatsController statsController = FindObjectOfType<StatsController>();
+        if (statsController != null) {
+            statsController.UpdatePlayerTakesDamage();
+        }
+    }
+
+    public static void StartNewLevel(Level level) {
+        StatsController statsController = FindObjectOfType<StatsController>();
+        if (statsController != null) {
+            statsController.UpdateStartNewLevel(level);
+        }
+    }
+
+    public static void FinishLevel() {
+        StatsController statsController = FindObjectOfType<StatsController>();
+        if (statsController != null) {
+            statsController.UpdateFinishLevel();
+        }
+    }
+
 }

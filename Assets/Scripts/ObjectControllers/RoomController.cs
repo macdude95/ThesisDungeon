@@ -5,7 +5,7 @@ using Pathfinding;
 
 public class RoomController : MonoBehaviour {
     public GameObject RoomConnectionPrefab;
-    public GameObject EnemyPrefab;
+    public GameObject[] EnemyPrefabs;
     public Sprite WallSprite;
     public Sprite WallWithNothingBelowSprite;
     public Sprite GroundSprite;
@@ -53,7 +53,8 @@ public class RoomController : MonoBehaviour {
         Vector3Int position = new Vector3Int(position2D.x, position2D.y, 0);
         switch (type) {
             case TileType.Enemy:
-                Instantiate(EnemyPrefab, position, Quaternion.identity, enemiesContainer.transform);
+                int enemyIndex = Random.Range(0, EnemyPrefabs.Length);
+                Instantiate(EnemyPrefabs[enemyIndex], position, Quaternion.identity, enemiesContainer.transform);
                 createChildGameObject(type.ToString(), position, groundContainer.transform, GroundSprite);
                 break;
             case TileType.Ground:

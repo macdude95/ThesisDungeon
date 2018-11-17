@@ -23,6 +23,7 @@ public class PearlController : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Space) && pickupPearlText.gameObject.activeSelf) {
             gameObject.SetActive(false);
             pickupPearlText.gameObject.SetActive(false);
+            FindObjectOfType<NarrativeController>().playerHasPearl = true;
         }
     }
 }

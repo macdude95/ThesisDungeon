@@ -32,7 +32,7 @@ public class LevelController : MonoBehaviour {
         currentRoomLocation = level.entranceRoomLocation;
         Vector3Int entrancePosition = currentRoomController.room.PositionOfRoomConnection(RoomConnection.North) + Vector3Int.down;
         PutPlayerInRoomAtPosition(currentRoomController, entrancePosition);
-        FindObjectOfType<StatsController>().StartNewLevel(level);
+        StatsController.StartNewLevel(level);
     }
 
     public void enterRoomConnection(RoomConnection roomConnection) {
@@ -51,7 +51,7 @@ public class LevelController : MonoBehaviour {
     private void exitLevel() {
         print("Level Complete!");
         FindObjectOfType<GameController>().loadInBetweenLevel();
-        FindObjectOfType<StatsController>().FinishLevel();
+        StatsController.FinishLevel();
     }
 
     private void PutPlayerInRoomAtPosition(RoomController roomController, Vector3Int position) {

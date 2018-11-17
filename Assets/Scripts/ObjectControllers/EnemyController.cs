@@ -19,7 +19,7 @@ public class EnemyController : MonoBehaviour {
 
     private void die() {
         gameObject.SetActive(false);
-        FindObjectOfType<StatsController>().PlayerKillsEnemy();
+        StatsController.PlayerKillsEnemy();
     }
 
     private void OnCollisionEnter2D(Collision2D collision) {

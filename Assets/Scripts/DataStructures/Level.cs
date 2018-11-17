@@ -25,18 +25,20 @@ public class Level {
         public Room room;
         public readonly bool isEntrance;
         public readonly Vector3Int location;
+        public readonly int maxNumberOfEnemies;
 
-        public RoomBuilder(int x, int y, int z, bool isOnCriticalPath, bool isEntrance = false) {
+        public RoomBuilder(int x, int y, int z, bool isOnCriticalPath, bool isEntrance = false, int maxNumberOfEnemies = 2) {
             this.isOnCriticalPath = isOnCriticalPath;
             this.roomConnections = new HashSet<RoomConnection>();
             this.isEntrance = isEntrance;
             this.location = new Vector3Int(x, y, z);
+            this.maxNumberOfEnemies = maxNumberOfEnemies;
         }
 
         public Room BuildRoom(Level level, int width = 15, int length = 9, float density = 0.15f) {
             RoomConnection[] roomConnectionsArray = new RoomConnection[roomConnections.Count];
             roomConnections.CopyTo(roomConnectionsArray);
-            this.room = new Room(level, location, width, length, density, roomConnections.ToList(), isEntrance);
+            this.room = new Room(level, location, width, length, density, roomConnections.ToList(), isEntrance, maxNumberOfEnemies);
             return this.room;
         }
     }
@@ -93,7 +95,7 @@ public class Level {
         int y = Random.Range(0, length);
         int z = height - 1; // NOTE: z is the vertical axis
         entranceRoomLocation = new Vector3Int(x, y, z);
-        RoomBuilder entranceRoomBuilder = new RoomBuilder(x, y, z, true, true);
+        RoomBuilder entranceRoomBuilder = new RoomBuilder(x, y, z, true, true, 0);
         roomBuilders[x, y, z] = entranceRoomBuilder;
 
         RoomBuilder currentRoomBuilder = entranceRoomBuilder;

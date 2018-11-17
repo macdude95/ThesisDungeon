@@ -32,7 +32,7 @@ public class Room {
     }
     private Level level;
 
-    public Room(Level level, Vector3Int location, int width, int length, float density, List<RoomConnection> roomConnections, bool isEntrance = false, int numberOfEnemies = 1) {
+    public Room(Level level, Vector3Int location, int width, int length, float density, List<RoomConnection> roomConnections, bool isEntrance = false, int maxNumberOfEnemies = 2) {
         if (width <= 0 || length <= 0 || density < 0 || density > 1) {
             throw new System.ArgumentOutOfRangeException();
         }
@@ -42,13 +42,14 @@ public class Room {
         this.width = width;
         this.length = length;
         this.density = density;
-        this.numberOfEnemies = numberOfEnemies;
+        this.numberOfEnemies = Random.Range(0, maxNumberOfEnemies + 1);
         this.roomConnections = roomConnections;
         this.isEntrance = isEntrance;
         this.grid = new Tile[this.width, this.length];
         if (notAccessible) { return; }
         setupWalls();
         placeEnemies();
+
     }
 
     public Vector3Int EntrancePositionOfRoomConnection(RoomConnection roomConnection) {
@@ -80,8 +81,9 @@ public class Room {
 
     private void placeEnemies() {
         List<Vector2Int> emptySpots = new List<Vector2Int>();
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < length; y++) {
+        // dont allow enemies to spwn within 2 tils from the edges... we dont want the player walking into a room and instantly getting hit
+        for (int x = 2; x < width-2; x++) {
+            for (int y = 2; y < length-2; y++) {
                 if (grid[x, y].type == TileType.Ground) {
                     emptySpots.Add(new Vector2Int(x, y));
                 }

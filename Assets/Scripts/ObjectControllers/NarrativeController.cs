@@ -23,6 +23,7 @@ public class NarrativeController : MonoBehaviour {
      */
 
     public GameObject PearlPrefab;
+    public bool playerHasPearl = false;
 
     private DialogueChunk[] openingDialogue {
         get {
@@ -60,30 +61,34 @@ public class NarrativeController : MonoBehaviour {
     private DialogueChunk[] passedTestDialogue {
         get {
             return new[] {
-                new DialogueChunk("It seems you faired well against the monsters."),
+                new DialogueChunk("It seems you faired well against the monsters.", () => {
+                    FindObjectOfType<EmptyRoomController>().startLevelTrigger.gameObject.SetActive(false);
+                }),
                 new DialogueChunk("You have passed my test!"),
                 new DialogueChunk("As promised... the pearl"),
                 new DialogueChunk("", () =>
                 {
                     Instantiate(PearlPrefab);
                 }),
-                new DialogueChunk("Alright now go ahead.")
+                new DialogueChunk("Alright now go ahead.", () => {
+                    FindObjectOfType<EmptyRoomController>().startLevelTrigger.gameObject.SetActive(true);
+                }, () => {
+                    return playerHasPearl;
+                })
             };
         }
     }
-    private Queue<DialogueChunk[]> narrativeQueue;
 
-    private void Awake() {
-        narrativeQueue = new Queue<DialogueChunk[]>();
-        narrativeQueue.Enqueue(openingDialogue);
-        narrativeQueue.Enqueue(passedTestDialogue);
+    private Queue<DialogueChunk[]> cutsceneQueue;
+
+    private void Start() {
+        cutsceneQueue = new Queue<DialogueChunk[]>();
+        cutsceneQueue.Enqueue(openingDialogue);
+        cutsceneQueue.Enqueue(passedTestDialogue);
     }
 
-    public DialogueChunk[] GetNextDialogueSequence() {
-        if (narrativeQueue.Count == 0) {
-            return new DialogueChunk[0];
-        }
-        return narrativeQueue.Dequeue();
+    public DialogueChunk[] GetNextCutscene() {
+        return cutsceneQueue.Dequeue();
     }
 
 }

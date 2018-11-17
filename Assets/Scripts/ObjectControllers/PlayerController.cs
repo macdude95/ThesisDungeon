@@ -26,6 +26,7 @@ public class PlayerController : MonoBehaviour {
     private Rigidbody2D rigidBody;
     private HashSet<ProjectileController> projectileSet;
     private bool allowFire = true;
+    private bool isInvincible = false;
 
     private void Awake() {
         rigidBody = GetComponent<Rigidbody2D>();
@@ -83,8 +84,23 @@ public class PlayerController : MonoBehaviour {
     }
 
     private void takeDamage() {
+        if (isInvincible) { return; }
         health--;
-        FindObjectOfType<StatsController>().PlayerTakesDamage();
+        StatsController.PlayerTakesDamage();
+        StartCoroutine(EnterInvincibleStateFromDamage());
+    }
+
+    private IEnumerator EnterInvincibleStateFromDamage() {
+        isInvincible = true;
+        int numberOfBlinks = 5;
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+        for (int i = 0; i < numberOfBlinks; i++) {
+            spriteRenderer.enabled = false;
+            yield return new WaitForSeconds(.15f);
+            spriteRenderer.enabled = true;;
+            yield return new WaitForSeconds(.15f);
+        }
+        isInvincible = false;
     }
 
 
